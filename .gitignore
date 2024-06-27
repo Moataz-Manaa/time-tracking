@@ -1,8 +1,3 @@
-# Ignore environment configuration file
 config.env
-
-# Ignore package lock file
 package-lock.json
-
-# Ignore node_modules folder
 node_modules/

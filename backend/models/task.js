@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const Schema = mongoose.Schema;
 
 const taskSchema = new Schema(
@@ -29,5 +30,15 @@ const taskSchema = new Schema(
     timestamps: true,
   }
 );
+
+taskSchema.pre("save", function (next) {
+  if (this.startTime && this.endTime) {
+    const duration = (new Date(this.endTime) - new Date(this.startTime)) / 1000; // duration in seconds
+    this.totalDuration = duration / 3600; // convert seconds to hours
+  } else {
+    this.totalDuration = 0;
+  }
+  next();
+});
 
 module.exports = mongoose.model("Task", taskSchema);

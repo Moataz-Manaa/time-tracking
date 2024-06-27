@@ -1,6 +1,7 @@
 const Task = require("../models/task");
 const Project = require("../models/project");
 
+// add task
 exports.addTask = async (req, res) => {
   try {
     const { projectId } = req.params;
@@ -24,6 +25,7 @@ exports.addTask = async (req, res) => {
   }
 };
 
+// update task
 exports.updateTask = async (req, res) => {
   try {
     const { projectId, taskId } = req.params;
@@ -43,6 +45,7 @@ exports.updateTask = async (req, res) => {
   }
 };
 
+// delete task
 exports.deleteTask = async (req, res) => {
   try {
     const { projectId, taskId } = req.params;
@@ -50,13 +53,13 @@ exports.deleteTask = async (req, res) => {
     if (!task) {
       return res.status(404).send("Task not found");
     }
-
     res.send("Task deleted");
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
 };
 
+// get trask
 exports.getTask = async (req, res) => {
   try {
     const { projectId } = req.params;

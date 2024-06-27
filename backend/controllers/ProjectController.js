@@ -1,5 +1,6 @@
 const Project = require("../models/project");
 
+// create project
 exports.addProject = async (req, res) => {
   try {
     const newProject = {
@@ -12,6 +13,7 @@ exports.addProject = async (req, res) => {
   }
 };
 
+// return projects
 exports.getProjects = async (req, res) => {
   try {
     const projects = await Project.find().populate("tasks");
@@ -24,6 +26,7 @@ exports.getProjects = async (req, res) => {
   }
 };
 
+// return one project
 exports.getOneProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -40,6 +43,7 @@ exports.getOneProject = async (req, res) => {
   }
 };
 
+// delete project
 exports.deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -53,6 +57,7 @@ exports.deleteProject = async (req, res) => {
   }
 };
 
+// update project
 exports.updateProject = async (req, res) => {
   try {
     const { id } = req.params;
