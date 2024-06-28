@@ -2,10 +2,11 @@ const express = require("express");
 const router = express.Router();
 const ProjectController = require("./../controllers/ProjectController");
 const TaskController = require("./../controllers/TaskController");
+const authController = require("./../controllers/AuthController");
 
 router.route("/add").post(ProjectController.addProject);
 
-router.route("/").get(ProjectController.getProjects);
+router.route("/").get(authController.protect, ProjectController.getProjects);
 
 router.route("/:id").get(ProjectController.getOneProject);
 
