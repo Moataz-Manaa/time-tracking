@@ -1,53 +1,59 @@
 const Project = require("../models/project");
+const User = require("../models/user");
 
-// create project
 exports.addProject = async (req, res) => {
   try {
     const newProject = {
       projectName: req.body.projectName,
+      user: req.user._id,
     };
     const project = await Project.create(newProject);
+
+    // Add project to user's project list
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: { projects: project._id },
+    });
+
     res.status(201).json({ message: "Project added!", project });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
 };
 
-// return projects
 exports.getProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate("tasks");
-    res.status(200).json({
-      status: "success",
-      data: projects,
-    });
+    const projects = await Project.find({ user: req.user._id }).populate(
+      "tasks"
+    );
+    res.status(200).json({ status: "success", data: projects });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
 };
 
-// return one project
 exports.getOneProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findById(id).populate("tasks");
+    const project = await Project.findOne({
+      _id: id,
+      user: req.user._id,
+    }).populate("tasks");
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
-    res.status(200).json({
-      status: "success",
-      data: project,
-    });
+    res.status(200).json({ status: "success", data: project });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
 };
 
-// delete project
 exports.deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findByIdAndDelete(id);
+    const project = await Project.findOneAndDelete({
+      _id: id,
+      user: req.user._id,
+    });
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
@@ -57,14 +63,14 @@ exports.deleteProject = async (req, res) => {
   }
 };
 
-// update project
 exports.updateProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    }).populate("tasks");
+    const project = await Project.findOneAndUpdate(
+      { _id: id, user: req.user._id },
+      req.body,
+      { new: true, runValidators: true }
+    ).populate("tasks");
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }

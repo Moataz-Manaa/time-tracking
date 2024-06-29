@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
@@ -42,12 +41,18 @@ const userSchema = new Schema({
     enum: ["user", "admin"],
     default: "user",
   },
+  projects: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+    },
+  ],
 });
 
 userSchema.pre("save", async function (next) {
-  // Hash the password
+  if (!this.isModified("password")) return next();
+
   this.password = await bcrypt.hash(this.password, 12);
-  // Delete passwordConfirm field
   this.passwordConfirm = undefined;
   next();
 });
@@ -59,4 +64,6 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-module.exports = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;

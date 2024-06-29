@@ -1,39 +1,40 @@
 const Task = require("../models/task");
 const Project = require("../models/project");
 
-// add task
 exports.addTask = async (req, res) => {
   try {
     const { projectId } = req.params;
-    const project = await Project.findById(projectId);
+    const project = await Project.findOne({
+      _id: projectId,
+      user: req.user._id,
+    });
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
-    const newTask = {
+
+    const newTask = await Task.create({
       title: req.body.title,
       description: req.body.description,
       startTime: req.body.startTime,
       endTime: req.body.endTime,
       projectId,
-    };
-    const task = await Task.create(newTask);
-    project.tasks.push(task._id);
+    });
+
+    project.tasks.push(newTask._id);
     await project.save();
-    res.status(201).json(task);
+
+    res.status(201).json(newTask);
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
 };
 
-// update task
 exports.updateTask = async (req, res) => {
   try {
     const { projectId, taskId } = req.params;
-    const updates = req.body;
-
     const task = await Task.findOneAndUpdate(
       { _id: taskId, projectId },
-      updates,
+      req.body,
       { new: true, runValidators: true }
     );
     if (!task) {
@@ -45,7 +46,6 @@ exports.updateTask = async (req, res) => {
   }
 };
 
-// delete task
 exports.deleteTask = async (req, res) => {
   try {
     const { projectId, taskId } = req.params;
@@ -53,18 +53,19 @@ exports.deleteTask = async (req, res) => {
     if (!task) {
       return res.status(404).send("Task not found");
     }
+    // Remove the task from the project's tasks array
+    await Project.findByIdAndUpdate(projectId, { $pull: { tasks: taskId } });
     res.send("Task deleted");
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
 };
 
-// get trask
-exports.getTask = async (req, res) => {
+exports.getTasks = async (req, res) => {
   try {
     const { projectId } = req.params;
     const tasks = await Task.find({ projectId });
-    if (!tasks) {
+    if (!tasks.length) {
       return res.status(404).send("No tasks found for this project");
     }
     res.send(tasks);

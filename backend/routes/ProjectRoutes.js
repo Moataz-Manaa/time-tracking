@@ -1,25 +1,21 @@
 const express = require("express");
+const ProjectController = require("../controllers/ProjectController");
+const TaskController = require("../controllers/TaskController");
+const authController = require("../controllers/AuthController");
+
 const router = express.Router();
-const ProjectController = require("./../controllers/ProjectController");
-const TaskController = require("./../controllers/TaskController");
-const authController = require("./../controllers/AuthController");
 
-router.route("/add").post(ProjectController.addProject);
+router.use(authController.protect);
 
-router.route("/").get(authController.protect, ProjectController.getProjects);
+router.post("/", ProjectController.addProject);
+router.get("/", ProjectController.getProjects);
+router.get("/:id", ProjectController.getOneProject);
+router.patch("/:id", ProjectController.updateProject);
+router.delete("/:id", ProjectController.deleteProject);
 
-router.route("/:id").get(ProjectController.getOneProject);
-
-router.route("/:id").delete(ProjectController.deleteProject);
-
-router.route("/:id").patch(ProjectController.updateProject);
-
-router.route("/:projectId/tasks").post(TaskController.addTask);
-
-router.route("/:projectId/tasks/:taskId").patch(TaskController.updateTask);
-
-router.route("/:projectId/tasks/:taskId").delete(TaskController.deleteTask);
-
-router.route("/:projectId/tasks/").get(TaskController.getTask);
+router.post("/:projectId/tasks", TaskController.addTask);
+router.get("/:projectId/tasks", TaskController.getTasks);
+router.patch("/:projectId/tasks/:taskId", TaskController.updateTask);
+router.delete("/:projectId/tasks/:taskId", TaskController.deleteTask);
 
 module.exports = router;

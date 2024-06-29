@@ -15,9 +15,9 @@ mongoose.connect(process.env.DATABASE, {}).then(() => {
 });
 
 const projectRouter = require("./backend/routes/ProjectRoutes");
-const UserRouter = require("./backend/routes/UserRoutes");
-app.use("/projects", projectRouter);
-app.use("/", UserRouter);
+const userRouter = require("./backend/routes/UserRoutes");
+app.use("/api/v1/projects", projectRouter);
+app.use("/api/v1/users", userRouter);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
