@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
@@ -68,11 +67,9 @@ exports.protect = async (req, res, next) => {
     }
 
     if (!token) {
-      return res
-        .status(401)
-        .json({
-          message: "You are not logged in! Please log in to get access.",
-        });
+      return res.status(401).json({
+        message: "You are not logged in! Please log in to get access.",
+      });
     }
 
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
@@ -89,4 +86,15 @@ exports.protect = async (req, res, next) => {
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
+};
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res
+        .status(403)
+        .send("You do not have permission to perform this action");
+    }
+    next();
+  };
 };
