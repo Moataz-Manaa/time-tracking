@@ -24,7 +24,6 @@ const userSchema = new Schema({
     type: String,
     required: true,
     minlength: 8,
-    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -50,8 +49,6 @@ const userSchema = new Schema({
 });
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
   next();

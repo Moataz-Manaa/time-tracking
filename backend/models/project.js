@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Task = require("./task");
 
 const Schema = mongoose.Schema;
 
@@ -8,9 +7,6 @@ const projectSchema = new Schema(
     projectName: {
       type: String,
       required: true,
-      unique: true,
-      trim: true,
-      minlength: 3,
     },
     tasks: [
       {

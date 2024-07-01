@@ -9,12 +9,10 @@ exports.addProject = async (req, res) => {
       user: req.user._id,
     };
     const project = await Project.create(newProject);
-
     // Add project to user's project list
     await User.findByIdAndUpdate(req.user._id, {
       $push: { projects: project._id },
     });
-
     res.status(201).json({ message: "Project added!", project });
   } catch (err) {
     res.status(500).send({ message: err.message });
@@ -72,15 +70,20 @@ exports.deleteProject = async (req, res) => {
 exports.updateProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findOneAndUpdate(
-      { _id: id, user: req.user._id },
-      req.body,
-      { new: true, runValidators: true }
-    ).populate("tasks");
+    const project = await Project.findById(id);
     if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      return res.status(404).json({
+        message: "Project not found",
+      });
     }
-    res.status(200).json({ message: "Project updated successfully!", project });
+    const updatedProject = await Project.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    }).populate("tasks");
+    res.status(200).json({
+      message: "Project updated successfully!",
+      project: updatedProject,
+    });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }

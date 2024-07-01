@@ -27,6 +27,7 @@ exports.signup = async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
+      role: req.body.role,
     });
     createSendToken(newUser, 201, res);
   } catch (err) {
@@ -44,7 +45,7 @@ exports.login = async (req, res) => {
         .json({ message: "Please provide email and password" });
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email });
 
     if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({ message: "Incorrect email or password" });
@@ -80,7 +81,6 @@ exports.protect = async (req, res, next) => {
         message: "The user belonging to this token does no longer exist.",
       });
     }
-
     req.user = currentUser;
     next();
   } catch (err) {

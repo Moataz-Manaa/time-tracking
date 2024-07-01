@@ -19,7 +19,7 @@ exports.updateUserInfo = async (req, res) => {
     const user = await User.findByIdAndUpdate(req.user._id, updates, {
       new: true,
       runValidators: true,
-    }).populate({ path: "projects", strictPopulate: false });
+    }).populate("projects");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

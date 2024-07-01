@@ -4,6 +4,7 @@ const Project = require("../models/project");
 exports.addTask = async (req, res) => {
   try {
     const { projectId } = req.params;
+
     const project = await Project.findOne({
       _id: projectId,
       user: req.user._id,
@@ -31,12 +32,11 @@ exports.addTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
-    const { projectId, taskId } = req.params;
-    const task = await Task.findOneAndUpdate(
-      { _id: taskId, projectId },
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const { taskId } = req.params;
+    const task = await Task.findByIdAndUpdate(taskId, req.body, {
+      new: true,
+      runValidators: true,
+    });
     if (!task) {
       return res.status(404).send("Task not found");
     }
@@ -49,7 +49,7 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
   try {
     const { projectId, taskId } = req.params;
-    const task = await Task.findOneAndDelete({ _id: taskId, projectId });
+    const task = await Task.findByIdAndDelete({ _id: taskId, projectId });
     if (!task) {
       return res.status(404).send("Task not found");
     }
