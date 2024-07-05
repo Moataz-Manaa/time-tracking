@@ -15,8 +15,7 @@ exports.getUserInfo = async (req, res) => {
 
 exports.updateUserInfo = async (req, res) => {
   try {
-    const updates = req.body;
-    const user = await User.findByIdAndUpdate(req.user._id, updates, {
+    const user = await User.findByIdAndUpdate(req.user._id, req.body, {
       new: true,
       runValidators: true,
     }).populate("projects");

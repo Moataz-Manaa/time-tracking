@@ -21,8 +21,10 @@ exports.addTask = async (req, res) => {
       projectId,
     });
 
-    project.tasks.push(newTask._id);
-    await project.save();
+    await Project.findByIdAndUpdate(
+      { _id: projectId },
+      { $push: { tasks: newTask._id } }
+    );
 
     res.status(201).json(newTask);
   } catch (err) {

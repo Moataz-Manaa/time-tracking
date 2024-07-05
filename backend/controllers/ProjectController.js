@@ -70,16 +70,15 @@ exports.deleteProject = async (req, res) => {
 exports.updateProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findById(id);
-    if (!project) {
-      return res.status(404).json({
-        message: "Project not found",
-      });
-    }
     const updatedProject = await Project.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     }).populate("tasks");
+    if (!updatedProject) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
     res.status(200).json({
       message: "Project updated successfully!",
       project: updatedProject,
