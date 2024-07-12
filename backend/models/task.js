@@ -8,21 +8,19 @@ const taskSchema = new Schema(
       type: String,
       required: true,
     },
-    description: {
-      type: String,
-    },
-    startTime: {
-      type: Date,
-    },
-    endTime: {
-      type: Date,
-    },
-    totalDuration: {
+    duration: {
       type: Number,
+    },
+    Date: {
+      type: Date,
     },
     projectId: {
       type: Schema.Types.ObjectId,
       ref: "Project",
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   {

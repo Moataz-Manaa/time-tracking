@@ -17,5 +17,6 @@ router.post("/:projectId/tasks", TaskController.addTask);
 router.get("/:projectId/tasks", TaskController.getTasks);
 router.patch("/:projectId/tasks/:taskId", TaskController.updateTask);
 router.delete("/:projectId/tasks/:taskId", TaskController.deleteTask);
+router.get("/tasks", TaskController.getAllTask);
 
 module.exports = router;

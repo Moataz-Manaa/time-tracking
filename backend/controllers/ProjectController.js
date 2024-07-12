@@ -21,9 +21,7 @@ exports.addProject = async (req, res) => {
 
 exports.getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ user: req.user._id }).populate(
-      "tasks"
-    );
+    const projects = await Project.find({ user: req.user._id });
     res.status(200).json({ status: "success", data: projects });
   } catch (err) {
     res.status(500).send({ message: err.message });
@@ -36,7 +34,7 @@ exports.getOneProject = async (req, res) => {
     const project = await Project.findOne({
       _id: id,
       user: req.user._id,
-    }).populate("tasks");
+    });
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
