@@ -10,7 +10,6 @@ const CreateTask = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [activeTaskId, setActiveTaskId] = useState(null);
   const [timerStartTime, setTimerStartTime] = useState(null);
-  const [timerIntervalId, setTimerIntervalId] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -31,6 +30,28 @@ const CreateTask = () => {
   }, []);
 
   useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "http://localhost:3000/api/v1/projects/user-tasks",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const tasksWithDateObjects = response.data.data.map((task) => ({
+          ...task,
+          Date: new Date(task.Date), // Convert string to Date object
+        }));
+        setTasks(tasksWithDateObjects);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+    fetchTasks();
+  }, []);
+
+  useEffect(() => {
     let interval;
     if (isRunning && activeTaskId) {
       setTimerStartTime(new Date()); // Set timerStartTime when the timer starts
@@ -41,7 +62,7 @@ const CreateTask = () => {
             task._id === activeTaskId
               ? {
                   ...task,
-                  duration: (task.duration || 0) + 1,
+                  duration: task.duration + 1,
                 }
               : task
           )
@@ -75,10 +96,7 @@ const CreateTask = () => {
         }
       );
 
-      // Logging the entire response to debug
-      console.log("API Response:", response);
-
-      const newTask = { ...task, _id: response.data._id }; // Corrected path to access _id
+      const newTask = { ...task, _id: response.data._id };
       setTasks([...tasks, newTask]);
       setTaskTitle("");
       setTimerInput("00:00:00");
@@ -121,7 +139,7 @@ const CreateTask = () => {
       );
       const updatedTask = {
         ...task,
-        duration: (task.duration || 0) + elapsedTime,
+        duration: task.duration + elapsedTime,
       };
       await axios.patch(
         `http://localhost:3000/api/v1/projects/${task.projectId}/tasks/${activeTaskId}`,
@@ -147,21 +165,6 @@ const CreateTask = () => {
       .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const fetchTasksForProject = async (projectId) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:3000/api/v1/projects/${projectId}/tasks`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setTasks(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
   return (
     <div className="container mx-auto p-4">
       <div className="mb-4">
@@ -174,10 +177,7 @@ const CreateTask = () => {
         />
         <select
           value={selectedProject}
-          onChange={(e) => {
-            setSelectedProject(e.target.value);
-            fetchTasksForProject(e.target.value);
-          }}
+          onChange={(e) => setSelectedProject(e.target.value)}
           className="p-2 border rounded w-full mb-2"
         >
           <option value="">Select project</option>
@@ -196,6 +196,7 @@ const CreateTask = () => {
             type="text"
             value={timerInput}
             onChange={(e) => setTimerInput(e.target.value)}
+            placeholder="Enter time in HH:MM:SS"
             className="p-2 border rounded w-full mb-2"
           />
         </div>
@@ -240,23 +241,16 @@ const CreateTask = () => {
                   className="bg-gray-100 border border-grey-500 md:border-none block md:table-row"
                 >
                   <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {project ? project.projectName : "Unknown Project"}
+                    {project.projectName}
                   </td>
                   <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
                     {task.title}
                   </td>
                   <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {activeTaskId === task._id && isRunning
-                      ? formatTime(
-                          (task.duration || 0) +
-                            Math.floor(
-                              (new Date() - new Date(timerStartTime)) / 1000
-                            )
-                        )
-                      : formatTime(task.duration || 0)}
+                    {formatTime(task.duration)}
                   </td>
                   <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {new Date(task.Date).toLocaleDateString()}
+                    {task.Date.toLocaleDateString()}
                   </td>
                   <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
                     <button

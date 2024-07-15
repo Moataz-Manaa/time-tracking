@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.use(authController.protect);
 
+router.get("/user-tasks", TaskController.getAllTasksForUser);
 router.post("/", ProjectController.addProject);
 router.get("/", ProjectController.getProjects);
 router.get("/:id", ProjectController.getOneProject);
@@ -17,6 +18,4 @@ router.post("/:projectId/tasks", TaskController.addTask);
 router.get("/:projectId/tasks", TaskController.getTasks);
 router.patch("/:projectId/tasks/:taskId", TaskController.updateTask);
 router.delete("/:projectId/tasks/:taskId", TaskController.deleteTask);
-router.get("/tasks", TaskController.getAllTask);
-
 module.exports = router;

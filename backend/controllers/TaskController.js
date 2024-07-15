@@ -16,7 +16,7 @@ exports.addTask = async (req, res) => {
     const newTask = await Task.create({
       title: req.body.title,
       duration: req.body.duration,
-      Date: req.body.duration,
+      Date: req.body.Date,
       projectId,
     });
 
@@ -75,10 +75,21 @@ exports.getTasks = async (req, res) => {
   }
 };
 
-exports.getAllTask = async (req, res) => {
+exports.getAllTasksForUser = async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.user._id });
-    res.status(200).json({ status: "success", data: tasks });
+    // Find all projects for the logged-in user
+    const projects = await Project.find({ user: req.user._id });
+
+    // Extract project IDs
+    const projectIds = projects.map((project) => project._id);
+
+    // Find all tasks that belong to the user's projects
+    const tasks = await Task.find({ projectId: { $in: projectIds } });
+
+    res.status(200).json({
+      status: "success",
+      data: tasks,
+    });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }

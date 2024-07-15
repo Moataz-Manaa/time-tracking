@@ -3,7 +3,6 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const token = localStorage.getItem("token");
 
   const handleLogout = () => {
@@ -39,16 +38,16 @@ const Navbar = () => {
           </>
         ) : (
           <>
-            {location.pathname !== "/login" && (
+            {
               <Link to="/login" className="px-4">
                 Login
               </Link>
-            )}
-            {location.pathname !== "/signup" && (
+            }
+            {
               <Link to="/signup" className="px-4">
                 Signup
               </Link>
-            )}
+            }
           </>
         )}
       </div>
