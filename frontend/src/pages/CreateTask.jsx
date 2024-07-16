@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { FaPlay } from "react-icons/fa6";
+import { MdDelete } from "react-icons/md";
+import { FaPause } from "react-icons/fa6";
+import { IoMdAdd } from "react-icons/io";
 
 const CreateTask = () => {
   const [taskTitle, setTaskTitle] = useState("");
@@ -203,90 +207,93 @@ const CreateTask = () => {
         <div>
           <button
             onClick={handleSubmit}
-            className="p-2 bg-purple-500 text-white rounded"
+            className="p-2 bg-green-600	 text-white rounded text-5xl"
           >
-            Add
+            <IoMdAdd />
           </button>
+          <p className="text-sm">Track time</p>
         </div>
       </div>
-      <table className="min-w-full border-collapse block md:table">
-        <thead className="block md:table-header-group">
-          <tr className="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative">
-            <th className="bg-gray-200 p-2 text-left md:border md:border-grey-500 block md:table-cell">
-              Project
-            </th>
-            <th className="bg-gray-200 p-2 text-left md:border md:border-grey-500 block md:table-cell">
-              Task Title
-            </th>
-            <th className="bg-gray-200 p-2 text-left md:border md:border-grey-500 block md:table-cell">
-              Duration
-            </th>
-            <th className="bg-gray-200 p-2 text-left md:border md:border-grey-500 block md:table-cell">
-              Date
-            </th>
-            <th className="bg-gray-200 p-2 text-left md:border md:border-grey-500 block md:table-cell">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="block md:table-row-group">
-          {tasks.length > 0 ? (
-            tasks.map((task) => {
-              const project = projects.find(
-                (project) => project._id === task.projectId
-              );
-              return (
-                <tr
-                  key={task._id}
-                  className="bg-gray-100 border border-grey-500 md:border-none block md:table-row"
-                >
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {project.projectName}
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {task.title}
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {formatTime(task.duration)}
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {task.Date.toLocaleDateString()}
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    <button
-                      onClick={() => handleDelete(task)}
-                      className="p-2 bg-red-500 text-white rounded"
-                    >
-                      Delete
-                    </button>
-                    {activeTaskId === task._id && isRunning ? (
-                      <button
-                        onClick={handleStop}
-                        className="p-2 bg-yellow-500 text-white rounded ml-2"
-                      >
-                        Stop
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleStart(task._id)}
-                        className="p-2 bg-blue-500 text-white rounded ml-2"
-                      >
-                        Start
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
-            <tr>
-              <td colSpan="5" className="p-2 text-center">
-                No tasks available
-              </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse block md:table mx-auto">
+          <thead className="block md:table-header-group">
+            <tr className="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative">
+              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+                Project
+              </th>
+              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+                Task Title
+              </th>
+              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+                Duration
+              </th>
+              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+                Date
+              </th>
+              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+                Actions
+              </th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="block md:table-row-group">
+            {tasks.length > 0 ? (
+              tasks.map((task) => {
+                const project = projects.find(
+                  (project) => project._id === task.projectId
+                );
+                return (
+                  <tr
+                    key={task._id}
+                    className="bg-gray-100 border border-grey-500 md:border-none block md:table-row"
+                  >
+                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
+                      {project.projectName}
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
+                      {task.title}
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
+                      {formatTime(task.duration)}
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
+                      {task.Date.toLocaleDateString()}
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
+                      <button
+                        onClick={() => handleDelete(task)}
+                        className="p-2 text-stone-600 rounded text-2xl"
+                      >
+                        <MdDelete />
+                      </button>
+                      {activeTaskId === task._id && isRunning ? (
+                        <button
+                          onClick={handleStop}
+                          className="p-2 text-stone-600 rounded ml-2 text-2xl"
+                        >
+                          <FaPause />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleStart(task._id)}
+                          className="p-2 text-stone-600 rounded ml-2 text-2xl"
+                        >
+                          <FaPlay />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="5" className="p-2 text-center">
+                  No tasks available
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

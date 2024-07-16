@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ const Login = () => {
         { email, password }
       );
       localStorage.setItem("token", response.data.token);
-      navigate("/projects");
+      navigate("/create-task");
     } catch (err) {
       setError(err.response.data.message);
     }
@@ -67,6 +67,11 @@ const Login = () => {
             Login
           </button>
         </form>
+        <div className="text-center mt-4">
+          <Link to="/signup" className="text- text-blue-500 hover:underline">
+            Create an account
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -24,7 +24,7 @@ const Signup = () => {
           passwordConfirm,
         }
       );
-      //localStorage.setItem("token", response.data.token);
+
       navigate("/login");
     } catch (err) {
       setError(err.response.data.message);
@@ -124,6 +124,11 @@ const Signup = () => {
             Signup
           </button>
         </form>
+        <div className="text-center mt-4">
+          <Link to="/login" className="text-md text-blue-500 hover:underline">
+            I have an account
+          </Link>
+        </div>
       </div>
     </div>
   );

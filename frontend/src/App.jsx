@@ -7,11 +7,13 @@ import PrivateRoute from "./components/PrivateRoute";
 import Navbar from "./components/Navbar";
 import CreateProject from "./pages/CreateProject";
 import CreateTask from "./pages/CreateTask";
+import RootPage from "./pages/RootPage";
 function App() {
   return (
     <Router>
       <Navbar />
       <Routes>
+        <Route path="/" element={<RootPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route

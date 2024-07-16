@@ -79,10 +79,8 @@ exports.getAllTasksForUser = async (req, res) => {
   try {
     // Find all projects for the logged-in user
     const projects = await Project.find({ user: req.user._id });
-
     // Extract project IDs
     const projectIds = projects.map((project) => project._id);
-
     // Find all tasks that belong to the user's projects
     const tasks = await Task.find({ projectId: { $in: projectIds } });
 
