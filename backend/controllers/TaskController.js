@@ -92,3 +92,33 @@ exports.getAllTasksForUser = async (req, res) => {
     res.status(500).send({ message: err.message });
   }
 };
+
+exports.getTasksByDate = async (req, res) => {
+  try {
+    const { date } = req.params;
+    // Convert date string to Date object and set the start and end of the day
+    const startDate = new Date(date);
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 1); // Move to the next day
+    // Set time to the beginning of the start date and end date
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    // Find tasks created on the specific day
+    const tasks = await Task.find({
+      Date: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    });
+    if (!tasks.length) {
+      return res.status(404).send("No tasks found for this date");
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: tasks,
+    });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+};

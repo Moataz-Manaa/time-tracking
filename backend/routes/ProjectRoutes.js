@@ -8,6 +8,7 @@ const router = express.Router();
 router.use(authController.protect);
 
 router.get("/user-tasks", TaskController.getAllTasksForUser);
+router.get("/tasks/date/:date", TaskController.getTasksByDate);
 router.post("/", ProjectController.addProject);
 router.get("/", ProjectController.getProjects);
 router.get("/:id", ProjectController.getOneProject);

@@ -39,7 +39,7 @@ const CreateTask = () => {
     const fetchTasksByDate = async (date) => {
       try {
         const token = localStorage.getItem("token");
-        const formattedDate = moment(date).format("YYYY-MM-DD"); // Ensure correct format
+        const formattedDate = moment(date).format("YYYY-MM-DD");
         console.log(`Fetching tasks for date: ${formattedDate}`);
         const response = await axios.get(
           `http://localhost:3000/api/v1/projects/tasks/date/${formattedDate}`,
@@ -55,7 +55,7 @@ const CreateTask = () => {
         setTasks(tasksWithDateObjects);
       } catch (error) {
         console.error("Error fetching tasks for date:", error);
-        setTasks([]); // Ensure tasks is set to an empty array on error
+        setTasks([]);
       }
     };
 
@@ -91,7 +91,7 @@ const CreateTask = () => {
       const task = {
         projectId: selectedProject,
         title: taskTitle,
-        Date: new Date(),
+        Date: selectedDate,
         duration: convertToSeconds(timerInput),
       };
       const response = await axios.post(
