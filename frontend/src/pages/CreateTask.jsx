@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaPlay } from "react-icons/fa6";
+import { FaPlay, FaPause } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { FaPause } from "react-icons/fa6";
 import { IoMdAdd } from "react-icons/io";
+import WeekDays from "../components/WeekDays";
+import moment from "moment";
 
 const CreateTask = () => {
   const [taskTitle, setTaskTitle] = useState("");
@@ -14,6 +15,7 @@ const CreateTask = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [activeTaskId, setActiveTaskId] = useState(null);
   const [timerStartTime, setTimerStartTime] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -34,26 +36,31 @@ const CreateTask = () => {
   }, []);
 
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchTasksByDate = async (date) => {
       try {
         const token = localStorage.getItem("token");
+        const formattedDate = moment(date).format("YYYY-MM-DD"); // Ensure correct format
+        console.log(`Fetching tasks for date: ${formattedDate}`);
         const response = await axios.get(
-          "http://localhost:3000/api/v1/projects/user-tasks",
+          `http://localhost:3000/api/v1/projects/tasks/date/${formattedDate}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
         const tasksWithDateObjects = response.data.data.map((task) => ({
           ...task,
-          Date: new Date(task.Date), // Convert string to Date object
+          Date: new Date(task.Date),
         }));
+        console.log("Fetched tasks:", tasksWithDateObjects);
         setTasks(tasksWithDateObjects);
       } catch (error) {
-        console.error("Error fetching tasks:", error);
+        console.error("Error fetching tasks for date:", error);
+        setTasks([]); // Ensure tasks is set to an empty array on error
       }
     };
-    fetchTasks();
-  }, []);
+
+    fetchTasksByDate(selectedDate);
+  }, [selectedDate]);
 
   useEffect(() => {
     let interval;
@@ -77,11 +84,6 @@ const CreateTask = () => {
     }
     return () => clearInterval(interval);
   }, [isRunning, activeTaskId]);
-
-  const convertToSeconds = (timeString) => {
-    const [hrs, mins, secs] = timeString.split(":").map(Number);
-    return hrs * 3600 + mins * 60 + secs;
-  };
 
   const handleSubmit = async () => {
     try {
@@ -169,6 +171,15 @@ const CreateTask = () => {
       .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const convertToSeconds = (timeString) => {
+    const [hrs, mins, secs] = timeString.split(":").map(Number);
+    return hrs * 3600 + mins * 60 + secs;
+  };
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
   return (
     <div className="container mx-auto max-w-7xl p-4">
       <div className="mb-4">
@@ -207,87 +218,96 @@ const CreateTask = () => {
         <div>
           <button
             onClick={handleSubmit}
-            className="p-2 bg-green-600	 text-white rounded text-5xl"
+            className="p-2 bg-green-600 text-white rounded text-5xl"
           >
             <IoMdAdd />
           </button>
           <p className="text-sm">Track time</p>
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <WeekDays onDateChange={handleDateChange} />
+      <div className="overflow-x-auto mt-4">
         <table className="min-w-full border-collapse block md:table mx-auto">
           <thead className="block md:table-header-group">
-            <tr className="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative">
-              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+            <tr className="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative ">
+              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
                 Project
               </th>
-              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
                 Task Title
               </th>
-              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
                 Duration
               </th>
-              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
                 Date
               </th>
-              <th className="bg-gray-200 p-2 text-center md:border md:border-grey-500 block md:table-cell">
+              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="block md:table-row-group">
             {tasks.length > 0 ? (
-              tasks.map((task) => {
-                const project = projects.find(
-                  (project) => project._id === task.projectId
-                );
-                return (
-                  <tr
-                    key={task._id}
-                    className="bg-gray-100 border border-grey-500 md:border-none block md:table-row"
-                  >
-                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
-                      {project.projectName}
-                    </td>
-                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
-                      {task.title}
-                    </td>
-                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
-                      {formatTime(task.duration)}
-                    </td>
-                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
-                      {task.Date.toLocaleDateString()}
-                    </td>
-                    <td className="p-2 md:border md:border-grey-500 text-center block md:table-cell">
-                      <button
-                        onClick={() => handleDelete(task)}
-                        className="p-2 text-stone-600 rounded text-2xl"
-                      >
-                        <MdDelete />
-                      </button>
-                      {activeTaskId === task._id && isRunning ? (
+              tasks.map((task) => (
+                <tr
+                  key={task._id}
+                  className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
+                >
+                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                    {projects.find((p) => p._id === task.projectId)
+                      ?.projectName || "Unknown"}
+                  </td>
+                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                    {task.title}
+                  </td>
+                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                    {formatTime(task.duration)}
+                  </td>
+                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                    {task.Date.toLocaleDateString()}
+                  </td>
+                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                    {activeTaskId === task._id ? (
+                      isRunning ? (
                         <button
                           onClick={handleStop}
-                          className="p-2 text-stone-600 rounded ml-2 text-2xl"
+                          className="p-2 bg-yellow-400 text-white rounded"
                         >
                           <FaPause />
                         </button>
                       ) : (
                         <button
                           onClick={() => handleStart(task._id)}
-                          className="p-2 text-stone-600 rounded ml-2 text-2xl"
+                          className="p-2 bg-green-600 text-white rounded"
                         >
                           <FaPlay />
                         </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
+                      )
+                    ) : (
+                      <button
+                        onClick={() => handleStart(task._id)}
+                        className="p-2 bg-green-600 text-white rounded"
+                      >
+                        <FaPlay />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDelete(task)}
+                      className="p-2 bg-red-600 text-white rounded ml-2"
+                    >
+                      <MdDelete />
+                    </button>
+                  </td>
+                </tr>
+              ))
             ) : (
-              <tr>
-                <td colSpan="5" className="p-2 text-center">
-                  No tasks available
+              <tr className="bg-gray-300 border border-grey-500 md:border-none block md:table-row">
+                <td
+                  colSpan="5"
+                  className="p-2 md:border md:border-grey-500 text-center block md:table-cell"
+                >
+                  No tasks found
                 </td>
               </tr>
             )}
