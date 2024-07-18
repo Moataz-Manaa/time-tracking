@@ -52,7 +52,7 @@ const CreateTask = () => {
           Date: new Date(task.Date),
         }));
         console.log("Fetched tasks:", tasksWithDateObjects);
-        setTasks(tasksWithDateObjects);
+        setTasks(tasksWithDateObjects || []);
       } catch (error) {
         console.error("Error fetching tasks for date:", error);
         setTasks([]);
@@ -255,8 +255,10 @@ const CreateTask = () => {
                   className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
                 >
                   <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {projects.find((p) => p._id === task.projectId)
-                      ?.projectName || "Unknown"}
+                    {
+                      projects.find((p) => p._id === task.projectId)
+                        ?.projectName
+                    }
                   </td>
                   <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
                     {task.title}
@@ -268,33 +270,24 @@ const CreateTask = () => {
                     {task.Date.toLocaleDateString()}
                   </td>
                   <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {activeTaskId === task._id ? (
-                      isRunning ? (
-                        <button
-                          onClick={handleStop}
-                          className="p-2 bg-yellow-400 text-white rounded"
-                        >
-                          <FaPause />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleStart(task._id)}
-                          className="p-2 bg-green-600 text-white rounded"
-                        >
-                          <FaPlay />
-                        </button>
-                      )
+                    {activeTaskId === task._id && isRunning ? (
+                      <button
+                        onClick={handleStop}
+                        className="p-2 mr-1.5 bg-yellow-400 text-white rounded"
+                      >
+                        <FaPause />
+                      </button>
                     ) : (
                       <button
                         onClick={() => handleStart(task._id)}
-                        className="p-2 bg-green-600 text-white rounded"
+                        className="p-2 mr-1.5 bg-green-600 text-white rounded"
                       >
                         <FaPlay />
                       </button>
                     )}
                     <button
                       onClick={() => handleDelete(task)}
-                      className="p-2 bg-red-600 text-white rounded ml-2"
+                      className="p-2 bg-red-600 text-white rounded"
                     >
                       <MdDelete />
                     </button>
@@ -302,10 +295,10 @@ const CreateTask = () => {
                 </tr>
               ))
             ) : (
-              <tr className="bg-gray-300 border border-grey-500 md:border-none block md:table-row">
+              <tr>
                 <td
                   colSpan="5"
-                  className="p-2 md:border md:border-grey-500 text-center block md:table-cell"
+                  className="p-2 text-center text-gray-500 font-bold"
                 >
                   No tasks found
                 </td>

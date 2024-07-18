@@ -18,6 +18,7 @@ exports.addTask = async (req, res) => {
       duration: req.body.duration,
       Date: req.body.Date,
       projectId,
+      user: req.user._id,
     });
 
     await Project.findByIdAndUpdate(
@@ -105,6 +106,7 @@ exports.getTasksByDate = async (req, res) => {
     endDate.setHours(0, 0, 0, 0);
     // Find tasks created on the specific day
     const tasks = await Task.find({
+      user: req.user._id,
       Date: {
         $gte: startDate,
         $lt: endDate,

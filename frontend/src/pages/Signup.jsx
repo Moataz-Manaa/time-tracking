@@ -24,7 +24,6 @@ const Signup = () => {
           passwordConfirm,
         }
       );
-
       navigate("/login");
     } catch (err) {
       setError(err.response.data.message);
