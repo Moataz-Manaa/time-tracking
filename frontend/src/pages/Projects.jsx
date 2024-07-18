@@ -42,28 +42,55 @@ const Projects = () => {
     }
   };
 
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-4xl p-8 bg-white rounded-xl shadow-md">
-        <h2 className="mb-6 text-2xl font-bold text-center">Projects</h2>
-        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-        <ul className="space-y-4">
+    <div className="overflow-x-auto mt-4">
+      <table className="border-collapse block md:table mx-auto">
+        <thead className="block md:table-header-group">
+          <tr className="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative ">
+            <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+              Project Name
+            </th>
+            <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+              Total Duration
+            </th>
+            <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody className="block md:table-row-group">
           {projects.map((project) => (
-            <li
+            <tr
               key={project._id}
-              className="px-4 py-2 border rounded-md flex justify-between items-center"
+              className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
             >
-              <h3 className="text-lg font-semibold">{project.projectName}</h3>
-              <button
-                onClick={() => handleDelete(project)}
-                className="p-2 text-red-600"
-              >
-                delete
-              </button>
-            </li>
+              <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                {project.projectName}
+              </td>
+              <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                {formatTime(project.totalDuration)}
+              </td>
+              <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                <button
+                  onClick={() => handleDelete(project)}
+                  className="p-2 text-red-600"
+                >
+                  delete
+                </button>
+              </td>
+            </tr>
           ))}
-        </ul>
-      </div>
+        </tbody>
+      </table>
     </div>
   );
 };

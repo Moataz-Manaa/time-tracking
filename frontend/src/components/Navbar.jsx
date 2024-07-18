@@ -21,9 +21,6 @@ const Navbar = () => {
         <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
           {token ? (
             <>
-              <Link to="/projects" className="px-4 py-2 text-md">
-                Projects
-              </Link>
               <Link to="/projects/new" className="px-4 py-2 text-md">
                 Create Project
               </Link>

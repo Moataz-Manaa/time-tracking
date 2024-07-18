@@ -1,37 +1,34 @@
 import React, { useState, useEffect } from "react";
-import moment from "moment";
+import { DateTime } from "luxon";
 
 // eslint-disable-next-line react/prop-types
 const WeekDays = ({ onDateChange }) => {
-  const [currentDate, setCurrentDate] = useState(moment().startOf("isoWeek"));
-  const [selectedDay, setSelectedDay] = useState(moment());
-  /*
-  useEffect(() => {
-    onDateChange(selectedDay.toDate());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-*/
+  const [currentDate, setCurrentDate] = useState(
+    DateTime.now().startOf("week")
+  );
+  const [selectedDay, setSelectedDay] = useState(DateTime.now());
+
   const getWeekDays = (start) => {
     let days = [];
     for (let i = 0; i < 7; i++) {
-      days.push(moment(start).add(i, "days"));
+      days.push(start.plus({ days: i }));
     }
     return days;
   };
 
   const handleNextWeek = () => {
-    const newDate = currentDate.clone().add(1, "week");
+    const newDate = currentDate.plus({ weeks: 1 });
     setCurrentDate(newDate);
   };
 
   const handlePrevWeek = () => {
-    const newDate = currentDate.clone().subtract(1, "week");
+    const newDate = currentDate.minus({ weeks: 1 });
     setCurrentDate(newDate);
   };
 
   const handleDayClick = (day) => {
     setSelectedDay(day);
-    onDateChange(day.toDate());
+    onDateChange(day.toJSDate());
   };
 
   return (
@@ -40,7 +37,7 @@ const WeekDays = ({ onDateChange }) => {
         <button onClick={handlePrevWeek} className="p-2 bg-gray-300 rounded">
           Prev
         </button>
-        <span className="font-bold">{currentDate.format("MMMM YYYY")}</span>
+        <span className="font-bold">{currentDate.toFormat("MMMM yyyy")}</span>
         <button onClick={handleNextWeek} className="p-2 bg-gray-300 rounded">
           Next
         </button>
@@ -50,13 +47,13 @@ const WeekDays = ({ onDateChange }) => {
           <div
             key={index}
             className={`p-2 text-center rounded cursor-pointer ${
-              selectedDay.isSame(day, "day")
+              selectedDay.hasSame(day, "day")
                 ? "bg-blue-400"
                 : "bg-blue-200 hover:bg-blue-300"
             }`}
             onClick={() => handleDayClick(day)}
           >
-            {day.format("ddd DD")}
+            {day.toFormat("ccc dd")}
           </div>
         ))}
       </div>

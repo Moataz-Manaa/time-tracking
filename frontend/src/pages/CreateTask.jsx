@@ -4,7 +4,7 @@ import { FaPlay, FaPause } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoMdAdd } from "react-icons/io";
 import WeekDays from "../components/WeekDays";
-import moment from "moment";
+import { DateTime } from "luxon";
 
 const CreateTask = () => {
   const [taskTitle, setTaskTitle] = useState("");
@@ -39,7 +39,7 @@ const CreateTask = () => {
     const fetchTasksByDate = async (date) => {
       try {
         const token = localStorage.getItem("token");
-        const formattedDate = moment(date).format("YYYY-MM-DD");
+        const formattedDate = DateTime.fromJSDate(date).toFormat("yyyy-MM-dd");
         console.log(`Fetching tasks for date: ${formattedDate}`);
         const response = await axios.get(
           `http://localhost:3000/api/v1/projects/tasks/date/${formattedDate}`,
@@ -85,8 +85,9 @@ const CreateTask = () => {
     return () => clearInterval(interval);
   }, [isRunning, activeTaskId]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
     try {
+      e.preventDefault();
       const token = localStorage.getItem("token");
       const task = {
         projectId: selectedProject,

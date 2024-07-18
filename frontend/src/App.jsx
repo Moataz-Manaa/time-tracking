@@ -17,14 +17,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route
-          path="/projects"
-          element={
-            <PrivateRoute>
-              <Projects />
-            </PrivateRoute>
-          }
-        />
-        <Route
           path="/projects/new"
           element={
             <PrivateRoute>
