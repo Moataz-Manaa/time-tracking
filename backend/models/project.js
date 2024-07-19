@@ -14,6 +14,10 @@ const projectSchema = new Schema(
         ref: "Task",
       },
     ],
+    totalDuration: {
+      type: Number,
+      default: 0,
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",

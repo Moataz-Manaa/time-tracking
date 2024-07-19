@@ -16,6 +16,7 @@ const CreateTask = () => {
   const [activeTaskId, setActiveTaskId] = useState(null);
   const [timerStartTime, setTimerStartTime] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [totalDuration, setTotalDuration] = useState(0);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -47,12 +48,13 @@ const CreateTask = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        const tasksWithDateObjects = response.data.data.map((task) => ({
+        const tasksWithDateObjects = response.data.data.tasks.map((task) => ({
           ...task,
           Date: new Date(task.Date),
         }));
-        console.log("Fetched tasks:", tasksWithDateObjects);
         setTasks(tasksWithDateObjects || []);
+        setTotalDuration(response.data.data.totalDuration);
+        console.log("Fetched tasks:", tasksWithDateObjects);
       } catch (error) {
         console.error("Error fetching tasks for date:", error);
         setTasks([]);
@@ -107,6 +109,7 @@ const CreateTask = () => {
       setTasks([...tasks, newTask]);
       setTaskTitle("");
       setTimerInput("00:00:00");
+      updateTotalDuration([...tasks, newTask]); // Update total duration
     } catch (error) {
       console.error("Error submitting task:", error);
     }
@@ -121,7 +124,9 @@ const CreateTask = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setTasks(tasks.filter((t) => t._id !== task._id));
+      const updatedTasks = tasks.filter((t) => t._id !== task._id);
+      setTasks(updatedTasks);
+      updateTotalDuration(updatedTasks); // Update total duration
       if (task._id === activeTaskId) {
         setIsRunning(false);
         setActiveTaskId(null);
@@ -155,12 +160,21 @@ const CreateTask = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setTasks(tasks.map((t) => (t._id === activeTaskId ? updatedTask : t)));
+      const updatedTasks = tasks.map((t) =>
+        t._id === activeTaskId ? updatedTask : t
+      );
+      setTasks(updatedTasks);
+      updateTotalDuration(updatedTasks); // Update total duration
       setIsRunning(false);
       setActiveTaskId(null);
     } catch (error) {
       console.error("Error stopping task:", error);
     }
+  };
+
+  const updateTotalDuration = (tasks) => {
+    const total = tasks.reduce((acc, task) => acc + task.duration, 0);
+    setTotalDuration(total);
   };
 
   const formatTime = (seconds) => {
@@ -183,6 +197,7 @@ const CreateTask = () => {
 
   return (
     <div className="container mx-auto max-w-7xl p-4">
+      <h2 className="text-2xl font-bold mb-6">Create Task</h2>
       <div className="mb-4">
         <input
           type="text"
@@ -308,6 +323,14 @@ const CreateTask = () => {
           </tbody>
         </table>
       </div>
+      {tasks.length > 0 && (
+        <div className="mt-4">
+          <p>
+            <span className="inline-block text-lg font-bold mr-3">Total:</span>
+            {formatTime(totalDuration)}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

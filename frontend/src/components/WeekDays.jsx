@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { DateTime } from "luxon";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaCalendar } from "react-icons/fa";
 
 // eslint-disable-next-line react/prop-types
 const WeekDays = ({ onDateChange }) => {
@@ -31,13 +34,31 @@ const WeekDays = ({ onDateChange }) => {
     onDateChange(day.toJSDate());
   };
 
+  const handleCalendarChange = (date) => {
+    const selectedDate = DateTime.fromJSDate(date);
+    setCurrentDate(selectedDate.startOf("week"));
+    setSelectedDay(selectedDate);
+    onDateChange(date);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
         <button onClick={handlePrevWeek} className="p-2 bg-gray-300 rounded">
           Prev
         </button>
-        <span className="font-bold">{currentDate.toFormat("MMMM yyyy")}</span>
+        <span className="font-bold flex items-center">
+          {currentDate.toFormat("MMMM yyyy")}
+          <DatePicker
+            selected={selectedDay.toJSDate()}
+            onChange={handleCalendarChange}
+            customInput={
+              <button className="ml-2 p-2 rounded">
+                <FaCalendar />
+              </button>
+            }
+          />
+        </span>
         <button onClick={handleNextWeek} className="p-2 bg-gray-300 rounded">
           Next
         </button>

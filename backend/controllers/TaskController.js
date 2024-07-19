@@ -78,11 +78,9 @@ exports.getTasks = async (req, res) => {
 
 exports.getAllTasksForUser = async (req, res) => {
   try {
-    // Find all projects for the logged-in user
     const projects = await Project.find({ user: req.user._id });
-    // Extract project IDs
     const projectIds = projects.map((project) => project._id);
-    // Find all tasks that belong to the user's projects
+
     const tasks = await Task.find({ projectId: { $in: projectIds } });
 
     res.status(200).json({
@@ -116,9 +114,17 @@ exports.getTasksByDate = async (req, res) => {
       return res.status(404).send("No tasks found for this date");
     }
 
+    const totalDuration = tasks.reduce(
+      (total, task) => total + task.duration,
+      0
+    );
+
     res.status(200).json({
       status: "success",
-      data: tasks,
+      data: {
+        tasks,
+        totalDuration,
+      },
     });
   } catch (err) {
     res.status(500).send({ message: err.message });

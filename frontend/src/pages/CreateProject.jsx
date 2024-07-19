@@ -76,16 +76,16 @@ const CreateProject = () => {
   };
 
   return (
-    <div>
-      <div className="max-w-md mx-auto mt-10 p-6">
+    <div className="container mx-auto max-w-7xl p-4">
+      <div className="mb-6">
         <h2 className="text-2xl font-bold mb-6">Create New Project</h2>
         {error && <div className="text-red-500 mb-4">{error}</div>}
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700">Project Name</label>
+          <div className="mb-4 flex items-center">
+            <label className="block text-gray-700 mr-4">Project Name</label>
             <input
               type="text"
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className=" p-2 border border-gray-300 rounded mt-1"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               required
@@ -93,14 +93,14 @@ const CreateProject = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-green-600 text-white rounded"
+            className=" py-2 px-4 bg-green-600 text-white rounded"
           >
             Create Project
           </button>
         </form>
       </div>
       <div className="overflow-x-auto mt-4">
-        <table className="border-collapse block md:table mx-auto">
+        <table className="min-w-full border-collapse block md:table mx-auto">
           <thead className="block md:table-header-group">
             <tr className="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative ">
               <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
