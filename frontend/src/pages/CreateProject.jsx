@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const CreateProject = () => {
   const [projects, setProjects] = useState([]);
@@ -46,6 +45,7 @@ const CreateProject = () => {
         }
       );
       setProjects([...projects, project]);
+      setProjectName("");
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred");
     }
@@ -117,7 +117,7 @@ const CreateProject = () => {
           <tbody className="block md:table-row-group">
             {projects.map((project) => (
               <tr
-                key={project._id}
+                key={`${project._id}_${project.projectName}`}
                 className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
               >
                 <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">

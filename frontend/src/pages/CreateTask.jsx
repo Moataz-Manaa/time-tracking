@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaPlay, FaPause } from "react-icons/fa";
+import { FaPlay, FaPause, FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoMdAdd } from "react-icons/io";
 import WeekDays from "../components/WeekDays";
@@ -17,6 +17,10 @@ const CreateTask = () => {
   const [timerStartTime, setTimerStartTime] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalDuration, setTotalDuration] = useState(0);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editTask, setEditTask] = useState(null);
+  const [editTaskTitle, setEditTaskTitle] = useState("");
+  const [editTimerInput, setEditTimerInput] = useState("00:00:00");
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -109,7 +113,7 @@ const CreateTask = () => {
       setTasks([...tasks, newTask]);
       setTaskTitle("");
       setTimerInput("00:00:00");
-      updateTotalDuration([...tasks, newTask]); // Update total duration
+      updateTotalDuration([...tasks, newTask]);
     } catch (error) {
       console.error("Error submitting task:", error);
     }
@@ -126,7 +130,7 @@ const CreateTask = () => {
       );
       const updatedTasks = tasks.filter((t) => t._id !== task._id);
       setTasks(updatedTasks);
-      updateTotalDuration(updatedTasks); // Update total duration
+      updateTotalDuration(updatedTasks);
       if (task._id === activeTaskId) {
         setIsRunning(false);
         setActiveTaskId(null);
@@ -164,7 +168,7 @@ const CreateTask = () => {
         t._id === activeTaskId ? updatedTask : t
       );
       setTasks(updatedTasks);
-      updateTotalDuration(updatedTasks); // Update total duration
+      updateTotalDuration(updatedTasks);
       setIsRunning(false);
       setActiveTaskId(null);
     } catch (error) {
@@ -193,6 +197,47 @@ const CreateTask = () => {
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
+  };
+
+  const openEditModal = (task) => {
+    setEditTask(task);
+    setEditTaskTitle(task.title);
+    setEditTimerInput(formatTime(task.duration));
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setEditTask(null);
+    setEditTaskTitle("");
+    setEditTimerInput("00:00:00");
+    setIsEditModalOpen(false);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const updatedTask = {
+        ...editTask,
+        title: editTaskTitle,
+        duration: convertToSeconds(editTimerInput),
+      };
+      await axios.patch(
+        `http://localhost:3000/api/v1/projects/${editTask.projectId}/tasks/${editTask._id}`,
+        updatedTask,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const updatedTasks = tasks.map((t) =>
+        t._id === editTask._id ? updatedTask : t
+      );
+      setTasks(updatedTasks);
+      updateTotalDuration(updatedTasks);
+      closeEditModal();
+    } catch (error) {
+      console.error("Error editing task:", error);
+    }
   };
 
   return (
@@ -303,9 +348,15 @@ const CreateTask = () => {
                     )}
                     <button
                       onClick={() => handleDelete(task)}
-                      className="p-2 bg-red-600 text-white rounded"
+                      className="p-2 mr-1.5 bg-red-600 text-white rounded"
                     >
                       <MdDelete />
+                    </button>
+                    <button
+                      onClick={() => openEditModal(task)}
+                      className="p-2 bg-blue-600 text-white rounded"
+                    >
+                      <FaEdit />
                     </button>
                   </td>
                 </tr>
@@ -322,6 +373,48 @@ const CreateTask = () => {
             )}
           </tbody>
         </table>
+        {isEditModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
+              <h2 className="text-2xl font-bold mb-4">Edit Task</h2>
+              <form onSubmit={handleEditSubmit}>
+                <div className="mb-4">
+                  <label className="block mb-2">Task Title</label>
+                  <input
+                    type="text"
+                    value={editTaskTitle}
+                    onChange={(e) => setEditTaskTitle(e.target.value)}
+                    className="p-2 border rounded w-full"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block mb-2">Timer Input</label>
+                  <input
+                    type="text"
+                    value={editTimerInput}
+                    onChange={(e) => setEditTimerInput(e.target.value)}
+                    className="p-2 border rounded w-full"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={closeEditModal}
+                    className="bg-gray-500 text-white p-2 rounded mr-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white p-2 rounded"
+                  >
+                    Update
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
       {tasks.length > 0 && (
         <div className="mt-4">
