@@ -109,7 +109,7 @@ const CreateTask = () => {
         }
       );
 
-      const newTask = { ...task, _id: response.data._id };
+      const newTask = { ...task, _id: response.data.task._id };
       setTasks([...tasks, newTask]);
       setTaskTitle("");
       setTimerInput("00:00:00");
@@ -374,7 +374,7 @@ const CreateTask = () => {
           </tbody>
         </table>
         {isEditModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="fixed bg-gray-800 bg-opacity-75 inset-0 flex items-center justify-center z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
               <h2 className="text-2xl font-bold mb-4">Edit Task</h2>
               <form onSubmit={handleEditSubmit}>

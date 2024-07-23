@@ -19,9 +19,40 @@ exports.addProject = async (req, res) => {
   }
 };
 
+exports.shareProject = async (req, res) => {
+  try {
+    const { projectId, sharedEmails } = req.body;
+
+    const usersToShareWith = await User.find({ email: { $in: sharedEmails } });
+    const sharedWithIds = usersToShareWith.map((user) => user._id);
+
+    const project = await Project.findByIdAndUpdate(
+      projectId,
+      { $addToSet: { sharedWith: { $each: sharedWithIds } } },
+      { new: true }
+    );
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    // Add project to the shared users' project lists
+    await User.updateMany(
+      { _id: { $in: sharedWithIds } },
+      { $addToSet: { projects: project._id } }
+    );
+
+    res.status(200).json({ message: "Project shared!", project });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+};
+
 exports.getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ user: req.user._id });
+    const projects = await Project.find({
+      $or: [{ user: req.user._id }, { sharedWith: req.user._id }],
+    });
     res.status(200).json({ status: "success", data: projects });
   } catch (err) {
     res.status(500).send({ message: err.message });
@@ -33,7 +64,7 @@ exports.getOneProject = async (req, res) => {
     const { id } = req.params;
     const project = await Project.findOne({
       _id: id,
-      user: req.user._id,
+      $or: [{ user: req.user._id }, { sharedWith: req.user._id }],
     });
     if (!project) {
       return res.status(404).json({ message: "Project not found" });

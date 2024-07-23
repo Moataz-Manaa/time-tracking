@@ -1,34 +1,38 @@
 const Task = require("../models/task");
 const Project = require("../models/project");
 
+const isUserAllowed = async (userId, projectId) => {
+  const project = await Project.findById(projectId);
+  if (!project) {
+    return false;
+  }
+  return project.user.equals(userId) || project.sharedWith.includes(userId);
+};
+
 exports.addTask = async (req, res) => {
   try {
     const { projectId } = req.params;
+    if (!(await isUserAllowed(req.user._id, projectId))) {
+      return res.status(403).json({
+        message: "You do not have permission to add tasks to this project",
+      });
+    }
 
-    const project = await Project.findOne({
-      _id: projectId,
-      user: req.user._id,
-    });
+    const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    const newTask = await Task.create({
-      title: req.body.title,
-      duration: req.body.duration,
-      Date: req.body.Date,
-      projectId,
+    const task = new Task({
+      ...req.body,
+      project: projectId,
       user: req.user._id,
     });
+    await task.save();
 
-    await Project.findByIdAndUpdate(
-      { _id: projectId },
-      { $push: { tasks: newTask._id } }
-    );
-
-    res.status(201).json(newTask);
-  } catch (err) {
-    res.status(500).send({ message: err.message });
+    res.status(201).json({ task });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
