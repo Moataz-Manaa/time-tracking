@@ -29,6 +29,13 @@ const projectSchema = new Schema(
         ref: "User",
       },
     ],
+
+    userDurations: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: "User" },
+        duration: { type: Number, default: 0 },
+      },
+    ],
   },
   {
     timestamps: true,

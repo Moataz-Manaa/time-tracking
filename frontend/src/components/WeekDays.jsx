@@ -10,6 +10,7 @@ const WeekDays = ({ onDateChange }) => {
     DateTime.now().startOf("week")
   );
   const [selectedDay, setSelectedDay] = useState(DateTime.now());
+  const [isToday, setIsToday] = useState(true);
 
   const getWeekDays = (start) => {
     let days = [];
@@ -31,6 +32,7 @@ const WeekDays = ({ onDateChange }) => {
 
   const handleDayClick = (day) => {
     setSelectedDay(day);
+    setIsToday(day.hasSame(DateTime.now(), "day"));
     onDateChange(day.toJSDate());
   };
 
@@ -38,7 +40,16 @@ const WeekDays = ({ onDateChange }) => {
     const selectedDate = DateTime.fromJSDate(date);
     setCurrentDate(selectedDate.startOf("week"));
     setSelectedDay(selectedDate);
+    setIsToday(selectedDate.hasSame(DateTime.now(), "day"));
     onDateChange(date);
+  };
+
+  const handleReturnToToday = () => {
+    const today = DateTime.now();
+    setCurrentDate(today.startOf("week"));
+    setSelectedDay(today);
+    setIsToday(true);
+    onDateChange(today.toJSDate());
   };
 
   return (
@@ -58,6 +69,14 @@ const WeekDays = ({ onDateChange }) => {
               </button>
             }
           />
+          {!isToday && (
+            <button
+              onClick={handleReturnToToday}
+              className="ml-2 p-2 text-blue-500 underline"
+            >
+              Return to Today
+            </button>
+          )}
         </span>
         <button onClick={handleNextWeek} className="p-2 bg-gray-300 rounded">
           Next

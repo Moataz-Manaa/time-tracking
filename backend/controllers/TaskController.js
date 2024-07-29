@@ -1,23 +1,9 @@
 const Task = require("../models/task");
 const Project = require("../models/project");
 
-const isUserAllowed = async (userId, projectId) => {
-  const project = await Project.findById(projectId);
-  if (!project) {
-    return false;
-  }
-  return project.user.equals(userId) || project.sharedWith.includes(userId);
-};
-
 exports.addTask = async (req, res) => {
   try {
     const { projectId } = req.params;
-    if (!(await isUserAllowed(req.user._id, projectId))) {
-      return res.status(403).json({
-        message: "You do not have permission to add tasks to this project",
-      });
-    }
-
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
@@ -30,6 +16,21 @@ exports.addTask = async (req, res) => {
     });
     await task.save();
 
+    // Update user duration in the project
+    const userDurationIndex = project.userDurations.findIndex(
+      (ud) => ud.user.toString() === req.user._id.toString()
+    );
+    if (userDurationIndex !== -1) {
+      project.userDurations[userDurationIndex].duration += task.duration;
+    } else {
+      project.userDurations.push({
+        user: req.user._id,
+        duration: task.duration,
+      });
+    }
+
+    await project.save();
+
     res.status(201).json({ task });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -39,14 +40,40 @@ exports.addTask = async (req, res) => {
 exports.updateTask = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const task = await Task.findByIdAndUpdate(taskId, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const task = await Task.findById(taskId);
     if (!task) {
       return res.status(404).send("Task not found");
     }
-    res.send(task);
+
+    const oldDuration = task.duration;
+    const updatedTask = await Task.findByIdAndUpdate(taskId, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    const project = await Project.findById(updatedTask.projectId);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    // Update user duration in the project
+    const userDurationIndex = project.userDurations.findIndex(
+      (ud) => ud.user.toString() === req.user._id.toString()
+    );
+    const durationDifference = updatedTask.duration - oldDuration;
+
+    if (userDurationIndex !== -1) {
+      project.userDurations[userDurationIndex].duration += durationDifference;
+    } else {
+      project.userDurations.push({
+        user: req.user._id,
+        duration: updatedTask.duration,
+      });
+    }
+
+    await project.save();
+
+    res.send(updatedTask);
   } catch (err) {
     res.status(500).send({ message: err.message });
   }

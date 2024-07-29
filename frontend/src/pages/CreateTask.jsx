@@ -21,6 +21,7 @@ const CreateTask = () => {
   const [editTask, setEditTask] = useState(null);
   const [editTaskTitle, setEditTaskTitle] = useState("");
   const [editTimerInput, setEditTimerInput] = useState("00:00:00");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -45,7 +46,6 @@ const CreateTask = () => {
       try {
         const token = localStorage.getItem("token");
         const formattedDate = DateTime.fromJSDate(date).toFormat("yyyy-MM-dd");
-        console.log(`Fetching tasks for date: ${formattedDate}`);
         const response = await axios.get(
           `http://localhost:3000/api/v1/projects/tasks/date/${formattedDate}`,
           {
@@ -58,10 +58,11 @@ const CreateTask = () => {
         }));
         setTasks(tasksWithDateObjects || []);
         setTotalDuration(response.data.data.totalDuration);
-        console.log("Fetched tasks:", tasksWithDateObjects);
       } catch (error) {
         console.error("Error fetching tasks for date:", error);
         setTasks([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -240,6 +241,10 @@ const CreateTask = () => {
     }
   };
 
+  const returnToToday = () => {
+    setSelectedDate(new Date());
+  };
+
   return (
     <div className="container mx-auto max-w-7xl p-4">
       <h2 className="text-2xl font-bold mb-6">Create Task</h2>
@@ -287,135 +292,140 @@ const CreateTask = () => {
         </div>
       </div>
       <WeekDays onDateChange={handleDateChange} />
-      <div className="overflow-x-auto mt-4">
-        <table className="min-w-full border-collapse block md:table mx-auto">
-          <thead className="block md:table-header-group">
-            <tr className="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative ">
-              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                Project
-              </th>
-              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                Task Title
-              </th>
-              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                Duration
-              </th>
-              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                Date
-              </th>
-              <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="block md:table-row-group">
-            {tasks.length > 0 ? (
-              tasks.map((task) => (
-                <tr
-                  key={task._id}
-                  className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
-                >
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {
-                      projects.find((p) => p._id === task.projectId)
-                        ?.projectName
-                    }
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {task.title}
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {formatTime(task.duration)}
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {task.Date.toLocaleDateString()}
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    {activeTaskId === task._id && isRunning ? (
+      {loading ? (
+        <div className="text-center mt-8">Loading...</div>
+      ) : (
+        <div className="overflow-x-auto mt-4">
+          <table className="min-w-full border-collapse block md:table mx-auto">
+            <thead className="block md:table-header-group">
+              <tr className="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative ">
+                <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                  Project
+                </th>
+                <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                  Task Title
+                </th>
+                <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                  Duration
+                </th>
+                <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                  Date
+                </th>
+                <th className="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="block md:table-row-group">
+              {tasks.length > 0 ? (
+                tasks.map((task) => (
+                  <tr
+                    key={task._id}
+                    className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
+                  >
+                    <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                      {
+                        projects.find((p) => p._id === task.projectId)
+                          ?.projectName
+                      }
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                      {task.title}
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                      {formatTime(task.duration)}
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                      {task.Date.toLocaleDateString()}
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                      {activeTaskId === task._id && isRunning ? (
+                        <button
+                          onClick={handleStop}
+                          className="p-2 mr-1.5 bg-yellow-400 text-white rounded"
+                        >
+                          <FaPause />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleStart(task._id)}
+                          className="p-2 mr-1.5 bg-green-600 text-white rounded"
+                        >
+                          <FaPlay />
+                        </button>
+                      )}
                       <button
-                        onClick={handleStop}
-                        className="p-2 mr-1.5 bg-yellow-400 text-white rounded"
+                        onClick={() => handleDelete(task)}
+                        className="p-2 mr-1.5 bg-red-600 text-white rounded"
                       >
-                        <FaPause />
+                        <MdDelete />
                       </button>
-                    ) : (
                       <button
-                        onClick={() => handleStart(task._id)}
-                        className="p-2 mr-1.5 bg-green-600 text-white rounded"
+                        onClick={() => openEditModal(task)}
+                        className="p-2 bg-blue-600 text-white rounded"
                       >
-                        <FaPlay />
+                        <FaEdit />
                       </button>
-                    )}
-                    <button
-                      onClick={() => handleDelete(task)}
-                      className="p-2 mr-1.5 bg-red-600 text-white rounded"
-                    >
-                      <MdDelete />
-                    </button>
-                    <button
-                      onClick={() => openEditModal(task)}
-                      className="p-2 bg-blue-600 text-white rounded"
-                    >
-                      <FaEdit />
-                    </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="p-2 text-center text-gray-500 font-bold"
+                  >
+                    No tasks found
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="p-2 text-center text-gray-500 font-bold"
-                >
-                  No tasks found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        {isEditModalOpen && (
-          <div className="fixed bg-gray-800 bg-opacity-75 inset-0 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
-              <h2 className="text-2xl font-bold mb-4">Edit Task</h2>
-              <form onSubmit={handleEditSubmit}>
-                <div className="mb-4">
-                  <label className="block mb-2">Task Title</label>
-                  <input
-                    type="text"
-                    value={editTaskTitle}
-                    onChange={(e) => setEditTaskTitle(e.target.value)}
-                    className="p-2 border rounded w-full"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block mb-2">Timer Input</label>
-                  <input
-                    type="text"
-                    value={editTimerInput}
-                    onChange={(e) => setEditTimerInput(e.target.value)}
-                    className="p-2 border rounded w-full"
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={closeEditModal}
-                    className="bg-gray-500 text-white p-2 rounded mr-2"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-blue-500 text-white p-2 rounded"
-                  >
-                    Update
-                  </button>
-                </div>
-              </form>
+              )}
+            </tbody>
+          </table>
+
+          {isEditModalOpen && (
+            <div className="fixed bg-gray-800 bg-opacity-75 inset-0 flex items-center justify-center z-50">
+              <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
+                <h2 className="text-2xl font-bold mb-4">Edit Task</h2>
+                <form onSubmit={handleEditSubmit}>
+                  <div className="mb-4">
+                    <label className="block mb-2">Task Title</label>
+                    <input
+                      type="text"
+                      value={editTaskTitle}
+                      onChange={(e) => setEditTaskTitle(e.target.value)}
+                      className="p-2 border rounded w-full"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block mb-2">Timer Input</label>
+                    <input
+                      type="text"
+                      value={editTimerInput}
+                      onChange={(e) => setEditTimerInput(e.target.value)}
+                      className="p-2 border rounded w-full"
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={closeEditModal}
+                      className="bg-gray-500 text-white p-2 rounded mr-2"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-blue-500 text-white p-2 rounded"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
       {tasks.length > 0 && (
         <div className="mt-4">
           <p>

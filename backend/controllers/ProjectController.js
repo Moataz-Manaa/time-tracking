@@ -52,7 +52,7 @@ exports.getProjects = async (req, res) => {
   try {
     const projects = await Project.find({
       $or: [{ user: req.user._id }, { sharedWith: req.user._id }],
-    });
+    }).populate("user sharedWith userDurations.user");
     res.status(200).json({ status: "success", data: projects });
   } catch (err) {
     res.status(500).send({ message: err.message });
@@ -112,6 +112,66 @@ exports.updateProject = async (req, res) => {
       message: "Project updated successfully!",
       project: updatedProject,
     });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+};
+
+exports.getAllProjectDetails = async (req, res) => {
+  try {
+    const projects = await Project.find()
+      .populate("user", "firstName lastName email") // Populating the user who created the project
+      .populate("sharedWith", "firstName lastName email"); // Populating the users with whom the project is shared
+
+    if (!projects.length) {
+      return res.status(404).json({ message: "No projects found" });
+    }
+
+    res.status(200).json({ status: "success", data: projects });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+};
+
+exports.getMyProjectsAndSharedUsers = async (req, res) => {
+  try {
+    const projects = await Project.find({ user: req.user._id })
+      .populate("user", "firstName lastName email")
+      .populate("sharedWith", "firstName lastName email")
+      .populate("userDurations.user", "firstName lastName email");
+
+    if (!projects.length) {
+      return res.status(404).json({ message: "No projects found" });
+    }
+    // Prepare response data including user durations
+    const response = projects.map((project) => {
+      const sharedUsersWithDurations = project.sharedWith.map((sharedUser) => {
+        const userDuration = project.userDurations.find(
+          (ud) => ud.user._id.toString() === sharedUser._id.toString()
+        );
+        return {
+          user: sharedUser,
+          duration: userDuration ? userDuration.duration : 0,
+        };
+      });
+
+      const creatorDuration = project.userDurations.find(
+        (ud) => ud.user._id.toString() === project.user._id.toString()
+      );
+
+      return {
+        _id: project._id,
+        projectName: project.projectName,
+        totalDuration: project.totalDuration,
+        creator: {
+          user: project.user,
+          duration: creatorDuration ? creatorDuration.duration : 0,
+        },
+        sharedUsersWithDurations,
+      };
+    });
+
+    res.status(200).json({ status: "success", data: response });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }

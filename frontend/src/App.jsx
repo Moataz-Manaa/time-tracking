@@ -2,12 +2,13 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Projects from "./pages/Projects";
 import PrivateRoute from "./components/PrivateRoute";
 import Navbar from "./components/Navbar";
 import CreateProject from "./pages/CreateProject";
 import CreateTask from "./pages/CreateTask";
 import RootPage from "./pages/RootPage";
+import Users from "./pages/Users";
+import Team from "./pages/Team";
 function App() {
   return (
     <Router>
@@ -29,6 +30,22 @@ function App() {
           element={
             <PrivateRoute>
               <CreateTask />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/team"
+          element={
+            <PrivateRoute>
+              <Team />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <PrivateRoute>
+              <Users />
             </PrivateRoute>
           }
         />
