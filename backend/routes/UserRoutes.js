@@ -4,12 +4,12 @@ const userController = require("../controllers/UserController");
 
 const router = express.Router();
 
+router.get("/activate/:activationCode", authController.activateAccount);
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router.post("/logout", authController.logout);
 
 router.use(authController.protect);
-
 router.get("/me", userController.getUserInfo);
 router.patch("/me", userController.updateUserInfo);
 

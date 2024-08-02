@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 
 const Schema = mongoose.Schema;
@@ -46,6 +47,13 @@ const userSchema = new Schema({
       ref: "Project",
     },
   ],
+  activationCode: {
+    type: String,
+  },
+  active: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 userSchema.pre("save", async function (next) {

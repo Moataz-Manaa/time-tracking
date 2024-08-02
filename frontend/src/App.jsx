@@ -9,6 +9,7 @@ import CreateTask from "./pages/CreateTask";
 import RootPage from "./pages/RootPage";
 import Users from "./pages/Users";
 import Team from "./pages/Team";
+import ActivationPage from "./pages/ActivationPage";
 function App() {
   return (
     <Router>
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<RootPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/activate/:activationCode" element={<ActivationPage />} />
         <Route
           path="/projects/new"
           element={

@@ -22,26 +22,21 @@ exports.addProject = async (req, res) => {
 exports.shareProject = async (req, res) => {
   try {
     const { projectId, sharedEmails } = req.body;
-
     const usersToShareWith = await User.find({ email: { $in: sharedEmails } });
     const sharedWithIds = usersToShareWith.map((user) => user._id);
-
     const project = await Project.findByIdAndUpdate(
       projectId,
       { $addToSet: { sharedWith: { $each: sharedWithIds } } },
       { new: true }
     );
-
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
-
     // Add project to the shared users' project lists
     await User.updateMany(
       { _id: { $in: sharedWithIds } },
       { $addToSet: { projects: project._id } }
     );
-
     res.status(200).json({ message: "Project shared!", project });
   } catch (err) {
     res.status(500).send({ message: err.message });

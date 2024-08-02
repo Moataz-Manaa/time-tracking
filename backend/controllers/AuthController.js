@@ -1,6 +1,8 @@
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+//const sendEmail = require("../utils/email");
+const { sendConfirmationEmail } = require("../utils/email");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -29,6 +31,12 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = async (req, res) => {
+  const characters =
+    "0123456789azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN";
+  let activationCode = "";
+  for (let i = 0; i < 25; i++) {
+    activationCode += characters[Math.floor(Math.random() * characters.length)];
+  }
   try {
     const newUser = await User.create({
       firstName: req.body.firstName,
@@ -37,8 +45,13 @@ exports.signup = async (req, res) => {
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
       role: req.body.role,
+      activationCode: activationCode,
     });
-    createSendToken(newUser, 201, res);
+    sendConfirmationEmail(newUser.email, activationCode);
+    res.status(201).json({
+      status: "success",
+      message: "User created. Please check your email for activation link.",
+    });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
@@ -59,7 +72,17 @@ exports.login = async (req, res) => {
     if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({ message: "Incorrect email or password" });
     }
-
+    /*
+    if (
+      user &&
+      (await user.correctPassword(password, user.password)) &&
+      !user.active
+    ) {
+      return res
+        .status(401)
+        .json({ message: "please check your email for activation" });
+    }
+*/
     createSendToken(user, 200, res);
   } catch (err) {
     res.status(500).send({ message: err.message });
@@ -111,4 +134,27 @@ exports.restrictTo = (...roles) => {
     }
     next();
   };
+};
+
+exports.activateAccount = async (req, res) => {
+  try {
+    const { activationCode } = req.params;
+
+    const user = await User.findOneAndUpdate(
+      { activationCode },
+      { active: true, activationCode: undefined },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid activation code" });
+    }
+
+    res.status(200).json({ message: "Account activated successfully" });
+  } catch (err) {
+    console.error("Error activating account:", err); // Log the error for debugging
+    res
+      .status(500)
+      .send({ message: "An error occurred while activating the account." });
+  }
 };
