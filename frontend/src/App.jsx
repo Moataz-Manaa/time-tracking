@@ -10,6 +10,7 @@ import RootPage from "./pages/RootPage";
 import Users from "./pages/Users";
 import Team from "./pages/Team";
 import ActivationPage from "./pages/ActivationPage";
+//import JoinProject from "./pages/JoinProject";
 function App() {
   return (
     <Router>
@@ -27,6 +28,14 @@ function App() {
             </PrivateRoute>
           }
         />
+        {/*        <Route
+          path="/join-project/:token"
+          element={
+            <PrivateRoute>
+              <JoinProject />
+            </PrivateRoute>
+          }
+        />*/}
         <Route
           path="/create-task"
           element={
@@ -43,6 +52,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/users"
           element={

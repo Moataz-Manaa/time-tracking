@@ -36,6 +36,13 @@ const projectSchema = new Schema(
         duration: { type: Number, default: 0 },
       },
     ],
+    /*
+    joinTokens: [
+      {
+        token: { type: String, required: true },
+        email: { type: String, required: true },
+      },
+    ],*/
   },
   {
     timestamps: true,

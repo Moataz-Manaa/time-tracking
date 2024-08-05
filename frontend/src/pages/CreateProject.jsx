@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreateProject = () => {
   const [projects, setProjects] = useState([]);
@@ -63,8 +65,10 @@ const CreateProject = () => {
       );
       setShowOverlay(false);
       setEmailInput("");
+      toast.success("Project shared successfully!");
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred");
+      toast.error("Failed to share project.");
     }
   };
 
@@ -86,8 +90,10 @@ const CreateProject = () => {
       );
       setProjects([...projects, response.data.project]);
       setProjectName("");
+      toast.success("Project created successfully !");
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred");
+      toast.error("Failed to create project");
     }
   };
 
@@ -171,6 +177,7 @@ const CreateProject = () => {
           </table>
         </div>
       )}
+      <ToastContainer />
       {showOverlay && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-4 rounded w-1/3">

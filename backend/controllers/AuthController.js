@@ -1,7 +1,6 @@
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-//const sendEmail = require("../utils/email");
 const { sendConfirmationEmail } = require("../utils/email");
 
 const signToken = (id) => {
@@ -72,7 +71,7 @@ exports.login = async (req, res) => {
     if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({ message: "Incorrect email or password" });
     }
-    /*
+
     if (
       user &&
       (await user.correctPassword(password, user.password)) &&
@@ -82,7 +81,7 @@ exports.login = async (req, res) => {
         .status(401)
         .json({ message: "please check your email for activation" });
     }
-*/
+
     createSendToken(user, 200, res);
   } catch (err) {
     res.status(500).send({ message: err.message });

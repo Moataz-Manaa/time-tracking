@@ -5,6 +5,8 @@ import { MdDelete } from "react-icons/md";
 import { IoMdAdd } from "react-icons/io";
 import WeekDays from "../components/WeekDays";
 import { DateTime } from "luxon";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreateTask = () => {
   const [taskTitle, setTaskTitle] = useState("");
@@ -115,8 +117,10 @@ const CreateTask = () => {
       setTaskTitle("");
       setTimerInput("00:00:00");
       updateTotalDuration([...tasks, newTask]);
+      toast.success("Task added successfully!");
     } catch (error) {
       console.error("Error submitting task:", error);
+      toast.error("Failed to add task.");
     }
   };
 
@@ -136,8 +140,10 @@ const CreateTask = () => {
         setIsRunning(false);
         setActiveTaskId(null);
       }
+      toast.error("Task deleted !");
     } catch (error) {
       console.error("Error deleting task:", error);
+      toast.error("Failed to delete task.");
     }
   };
 
@@ -236,8 +242,10 @@ const CreateTask = () => {
       setTasks(updatedTasks);
       updateTotalDuration(updatedTasks);
       closeEditModal();
+      toast.success("Task updated successfully!");
     } catch (error) {
       console.error("Error editing task:", error);
+      toast.error("Failed to update task.");
     }
   };
 
@@ -381,6 +389,8 @@ const CreateTask = () => {
               )}
             </tbody>
           </table>
+
+          <ToastContainer />
 
           {isEditModalOpen && (
             <div className="fixed bg-gray-800 bg-opacity-75 inset-0 flex items-center justify-center z-50">

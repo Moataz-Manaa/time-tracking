@@ -25,3 +25,16 @@ module.exports.sendConfirmationEmail = (email, activationCode) => {
     })
     .catch((err) => console.log(err));
 };
+/*
+module.exports.sendJoinEmail = (email, joinUrl) => {
+  transport
+    .sendMail({
+      from: "manaamoataz@gmail.com",
+      to: email,
+      subject: "Join Project",
+      html: `<h1>Join Project</h1>
+          <p>You have been invited to join a project. Click the link below to join:</p>
+          <a href="${joinUrl}">Join Project</a>`,
+    })
+    .catch((err) => console.log(err));
+};*/
