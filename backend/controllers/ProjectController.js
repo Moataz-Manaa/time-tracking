@@ -137,8 +137,8 @@ exports.updateProject = async (req, res) => {
 exports.getAllProjectDetails = async (req, res) => {
   try {
     const projects = await Project.find()
-      .populate("user", "firstName lastName email")
-      .populate("sharedWith", "firstName lastName email");
+      .populate("user")
+      .populate("sharedWith");
     if (!projects.length) {
       return res.status(404).json({ message: "No projects found" });
     }

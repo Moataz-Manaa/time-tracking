@@ -6,15 +6,15 @@ const transport = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: "manaamoataz@gmail.com",
-    pass: "kepojprouthxdxwk",
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 
 module.exports.sendConfirmationEmail = (email, activationCode) => {
   transport
     .sendMail({
-      from: "manaamoataz@gmail.com",
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "email activation",
       html: `<h1>confirmation email</h1>

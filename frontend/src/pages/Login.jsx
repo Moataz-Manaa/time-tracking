@@ -16,6 +16,7 @@ const Login = () => {
         { email, password }
       );
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("userId", response.data.data.user._id);
       navigate("/create-task");
     } catch (err) {
       setError(err.response.data.message);

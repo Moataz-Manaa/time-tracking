@@ -61,7 +61,7 @@ const CreateTask = () => {
         setTasks(tasksWithDateObjects || []);
         setTotalDuration(response.data.data.totalDuration);
       } catch (error) {
-        console.error("Error fetching tasks for date:", error);
+        //console.error("Error fetching tasks for date:", error);
         setTasks([]);
       } finally {
         setLoading(false);
@@ -247,10 +247,6 @@ const CreateTask = () => {
       console.error("Error editing task:", error);
       toast.error("Failed to update task.");
     }
-  };
-
-  const returnToToday = () => {
-    setSelectedDate(new Date());
   };
 
   return (

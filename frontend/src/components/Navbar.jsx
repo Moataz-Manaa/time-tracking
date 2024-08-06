@@ -31,6 +31,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     navigate("/login");
   };
 
@@ -55,8 +56,8 @@ const Navbar = () => {
                 Team
               </Link>
               {userRole === "admin" && (
-                <Link to="/users" className="px-4 py-2 text-md">
-                  Users
+                <Link to="/projects" className="px-4 py-2 text-md">
+                  Projects
                 </Link>
               )}
               <button

@@ -7,10 +7,9 @@ import Navbar from "./components/Navbar";
 import CreateProject from "./pages/CreateProject";
 import CreateTask from "./pages/CreateTask";
 import RootPage from "./pages/RootPage";
-import Users from "./pages/Users";
+import Projects from "./pages/Projects";
 import Team from "./pages/Team";
 import ActivationPage from "./pages/ActivationPage";
-//import JoinProject from "./pages/JoinProject";
 function App() {
   return (
     <Router>
@@ -28,14 +27,6 @@ function App() {
             </PrivateRoute>
           }
         />
-        {/*        <Route
-          path="/join-project/:token"
-          element={
-            <PrivateRoute>
-              <JoinProject />
-            </PrivateRoute>
-          }
-        />*/}
         <Route
           path="/create-task"
           element={
@@ -54,10 +45,10 @@ function App() {
         />
 
         <Route
-          path="/users"
+          path="/projects"
           element={
             <PrivateRoute>
-              <Users />
+              <Projects />
             </PrivateRoute>
           }
         />

@@ -31,11 +31,16 @@ const CreateProject = () => {
         setLoading(false);
       }
     };
+
     fetchProjects();
   }, []);
 
-  /*
   const handleDelete = async (project) => {
+    const userId = localStorage.getItem("userId");
+    if (project.user !== userId && project.user._id !== userId) {
+      alert("You do not have permission to delete this project");
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
@@ -45,11 +50,13 @@ const CreateProject = () => {
         }
       );
       setProjects(projects.filter((p) => p._id !== project._id));
+      toast.error("Project deleted !");
     } catch (error) {
       console.error("Error deleting project:", error);
+      toast.error("Failed to delete project");
     }
   };
-*/
+
   const handleShareSubmit = async () => {
     try {
       const emails = emailInput.split(" ").map((email) => email.trim());
@@ -106,6 +113,18 @@ const CreateProject = () => {
       .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handleShareClick = (project) => {
+    const userId = localStorage.getItem("userId");
+    console.log(userId);
+    console.log(project.user._id);
+    if (project.user !== userId && project.user._id !== userId) {
+      alert("You do not have permission to share this project");
+      return;
+    }
+    setSelectedProject(project);
+    setShowOverlay(true);
+  };
+
   return (
     <div className="container mx-auto max-w-7xl p-4">
       <div className="mb-6">
@@ -149,30 +168,44 @@ const CreateProject = () => {
               </tr>
             </thead>
             <tbody className="block md:table-row-group">
-              {projects.map((project) => (
-                <tr
-                  key={`${project._id}_${project.projectName}`}
-                  className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
-                >
-                  <td className="p-2 md:border md:border-grey-500">
-                    {project.projectName}
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500">
-                    {formatTime(project.totalDuration)}
-                  </td>
-                  <td className="p-2 md:border md:border-grey-500">
-                    <button
-                      onClick={() => {
-                        setSelectedProject(project);
-                        setShowOverlay(true);
-                      }}
-                      className="ml-2 py-2 px-4 bg-blue-600 text-white rounded"
-                    >
-                      Share With
-                    </button>
+              {projects.length > 0 ? (
+                projects.map((project) => (
+                  <tr
+                    key={`${project._id}_${project.projectName}`}
+                    className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
+                  >
+                    <td className="p-2 md:border md:border-grey-500">
+                      {project.projectName}
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500">
+                      {formatTime(project.totalDuration)}
+                    </td>
+                    <td className="p-2 md:border md:border-grey-500">
+                      <button
+                        onClick={() => handleShareClick(project)}
+                        className="ml-2 py-2 px-4 bg-blue-600 text-white rounded"
+                      >
+                        Share With
+                      </button>
+                      <button
+                        onClick={() => handleDelete(project)}
+                        className="ml-2 py-2 px-4 bg-red-600 text-white rounded"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="p-2 text-center text-gray-500 font-bold"
+                  >
+                    No projects found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

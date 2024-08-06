@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-function Users() {
+function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -114,4 +114,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default Projects;

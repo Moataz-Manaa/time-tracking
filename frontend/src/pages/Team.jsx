@@ -3,6 +3,7 @@ import axios from "axios";
 
 function Team() {
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -53,42 +54,53 @@ function Team() {
             </tr>
           </thead>
           <tbody className="block md:table-row-group">
-            {projects.map((project) => (
-              <tr
-                key={project._id}
-                className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
-              >
-                <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 block md:table-cell">
-                  {project.projectName}
-                </td>
-                <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 block md:table-cell">
-                  {formatTime(project.totalDuration)}
-                </td>
-                <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 block md:table-cell">
-                  <div>
-                    <span className="text-transform: capitalize font-semibold">
-                      {project.creator.user.firstName}{" "}
-                      {project.creator.user.lastName} (Project Creator)
-                    </span>{" "}
-                    Work for :{" "}
-                    <span className="text-red-600 ml-4">
-                      {formatTime(project.creator.duration)}
-                    </span>{" "}
-                  </div>
-                  {project.sharedUsersWithDurations.map((sharedUser) => (
-                    <div key={sharedUser.user._id}>
+            {projects.length > 0 ? (
+              projects.map((project) => (
+                <tr
+                  key={project._id}
+                  className="bg-gray-300 border border-grey-500 md:border-none block md:table-row"
+                >
+                  <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 block md:table-cell">
+                    {project.projectName}
+                  </td>
+                  <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 block md:table-cell">
+                    {formatTime(project.totalDuration)}
+                  </td>
+                  <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 block md:table-cell">
+                    <div>
                       <span className="text-transform: capitalize font-semibold">
-                        {sharedUser.user.firstName} {sharedUser.user.lastName}
+                        {project.creator.user.firstName}{" "}
+                        {project.creator.user.lastName} (Project Creator)
                       </span>{" "}
                       Work for :{" "}
                       <span className="text-red-600 ml-4">
-                        {formatTime(sharedUser.duration)}
-                      </span>
+                        {formatTime(project.creator.duration)}
+                      </span>{" "}
                     </div>
-                  ))}
+                    {project.sharedUsersWithDurations.map((sharedUser) => (
+                      <div key={sharedUser.user._id}>
+                        <span className="text-transform: capitalize font-semibold">
+                          {sharedUser.user.firstName} {sharedUser.user.lastName}
+                        </span>{" "}
+                        Work for :{" "}
+                        <span className="text-red-600 ml-4">
+                          {formatTime(sharedUser.duration)}
+                        </span>
+                      </div>
+                    ))}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="5"
+                  className="p-2 text-center text-gray-500 font-bold"
+                >
+                  No Projects found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

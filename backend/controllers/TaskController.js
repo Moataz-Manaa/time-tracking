@@ -28,7 +28,7 @@ exports.addTask = async (req, res) => {
         duration: task.duration,
       });
     }
-
+    project.tasks.push(task._id);
     await project.save();
 
     res.status(201).json({ task });
@@ -141,9 +141,9 @@ exports.getTasksByDate = async (req, res) => {
         $lt: endDate,
       },
     });
-    if (!tasks.length) {
+    /*if (!tasks.length) {
       return res.status(404).send("No tasks found for this date");
-    }
+    }*/
 
     const totalDuration = tasks.reduce(
       (total, task) => total + task.duration,
