@@ -2,7 +2,6 @@ const Project = require("../models/project");
 const User = require("../models/user");
 const Task = require("../models/task");
 const crypto = require("crypto");
-const { sendJoinEmail } = require("../utils/email");
 
 exports.addProject = async (req, res) => {
   try {
@@ -138,7 +137,8 @@ exports.getAllProjectDetails = async (req, res) => {
   try {
     const projects = await Project.find()
       .populate("user")
-      .populate("sharedWith");
+      .populate("sharedWith")
+      .populate("tasks");
     if (!projects.length) {
       return res.status(404).json({ message: "No projects found" });
     }
@@ -192,39 +192,3 @@ exports.getMyProjectsAndSharedUsers = async (req, res) => {
     res.status(500).send({ message: err.message });
   }
 };
-/*
-exports.joinProject = async (req, res) => {
-  try {
-    const { token, projectId } = req.body;
-
-    // Find the project with the provided projectId and token
-    const project = await Project.findOne({
-      _id: projectId,
-      "joinTokens.token": token,
-    });
-
-    if (!project) {
-      return res.status(404).json({ message: "Invalid or expired token" });
-    }
-
-    const user = req.user;
-    // Add the user to the project if not already part of it
-    if (!project.sharedWith.includes(user._id)) {
-      project.sharedWith.push(user._id);
-    }
-
-    // Remove the used token
-    project.joinTokens = project.joinTokens.filter((t) => t.token !== token);
-    await project.save();
-
-    // Add the project to the user's project list if not already added
-    if (!user.projects.includes(project._id)) {
-      user.projects.push(project._id);
-      await user.save();
-    }
-
-    res.status(200).json({ message: "Project joined successfully" });
-  } catch (err) {
-    res.status(500).send({ message: err.message });
-  }
-};*/

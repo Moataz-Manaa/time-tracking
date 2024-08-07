@@ -75,34 +75,54 @@ function Projects() {
                     {formatDuration(project.totalDuration)}
                   </td>
                   <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 md:table-cell text-left">
-                    <div>
-                      <span className="text-transform: capitalize font-semibold">
-                        {project.user.firstName} {project.user.lastName}{" "}
-                        (project creator)
-                      </span>{" "}
-                      Work For :{" "}
-                      <span className="text-red-600 ml-4">
-                        {formatDuration(
-                          getUserDuration(
-                            project.user._id,
-                            project.userDurations
-                          )
-                        )}
-                      </span>{" "}
-                    </div>
-                    {project.sharedWith.map((user) => (
-                      <div key={user._id}>
-                        <span className="text-transform: capitalize font-semibold">
-                          {user.firstName} {user.lastName}
+                    <ul className="list-disc pl-5">
+                      <li className="mb-2">
+                        <span className="font-semibold">
+                          {project.user.firstName} {project.user.lastName}{" "}
+                          (project creator)
                         </span>{" "}
-                        Work for :{" "}
-                        <span className="text-red-600 ml-4">
+                        Work For :{" "}
+                        <span className="text-red-600">
                           {formatDuration(
-                            getUserDuration(user._id, project.userDurations)
+                            getUserDuration(
+                              project.user._id,
+                              project.userDurations
+                            )
                           )}
                         </span>
-                      </div>
-                    ))}
+                        <ul className="list-none pl-4">
+                          {project.tasks
+                            .filter((task) => task.user === project.user._id)
+                            .map((task) => (
+                              <li key={task._id} className="text-blue-700">
+                                {task.title}
+                              </li>
+                            ))}
+                        </ul>
+                      </li>
+                      {project.sharedWith.map((user) => (
+                        <li key={user._id} className="mb-2">
+                          <span className="font-semibold">
+                            {user.firstName} {user.lastName}
+                          </span>{" "}
+                          Work For :{" "}
+                          <span className="text-red-600">
+                            {formatDuration(
+                              getUserDuration(user._id, project.userDurations)
+                            )}
+                          </span>
+                          <ul className="list-none pl-4">
+                            {project.tasks
+                              .filter((task) => task.user === user._id)
+                              .map((task) => (
+                                <li key={task._id} className="text-blue-700">
+                                  {task.title}
+                                </li>
+                              ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ul>
                   </td>
                 </tr>
               ))}
