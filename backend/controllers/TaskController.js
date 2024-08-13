@@ -8,14 +8,12 @@ exports.addTask = async (req, res) => {
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
-
     const task = new Task({
       ...req.body,
       project: projectId,
       user: req.user._id,
     });
     await task.save();
-
     // Update user duration in the project
     const userDurationIndex = project.userDurations.findIndex(
       (ud) => ud.user.toString() === req.user._id.toString()
@@ -82,13 +80,41 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
   try {
     const { projectId, taskId } = req.params;
-    const task = await Task.findByIdAndDelete({ _id: taskId, projectId });
+
+    const task = await Task.findById(taskId);
     if (!task) {
       return res.status(404).send("Task not found");
     }
-    // Remove the task from the project's tasks array
-    await Project.findByIdAndUpdate(projectId, { $pull: { tasks: taskId } });
-    res.send("Task deleted");
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).send("Project not found");
+    }
+
+    const userDurationEntry = project.userDurations.find(
+      (entry) => entry.user.toString() === task.user.toString()
+    );
+
+    // Update user duration
+    if (userDurationEntry) {
+      userDurationEntry.duration -= task.duration;
+      if (userDurationEntry.duration < 0) {
+        userDurationEntry.duration = 0;
+      }
+    }
+    // Calculate new total duration
+    const newTotalDuration = project.totalDuration - task.duration;
+    // Update project and remove task
+    await Project.findByIdAndUpdate(projectId, {
+      $pull: { tasks: taskId },
+      totalDuration: newTotalDuration,
+      userDurations: project.userDurations, // Update userDurations array
+    });
+
+    // Remove task from Task collection
+    await Task.findByIdAndDelete(taskId);
+
+    res.send("Task deleted and user duration updated");
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
@@ -141,9 +167,6 @@ exports.getTasksByDate = async (req, res) => {
         $lt: endDate,
       },
     });
-    /*if (!tasks.length) {
-      return res.status(404).send("No tasks found for this date");
-    }*/
 
     const totalDuration = tasks.reduce(
       (total, task) => total + task.duration,

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-function Team() {
+function Own_Projects() {
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -35,10 +34,14 @@ function Team() {
       .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const getUserTasks = (userId, tasks) => {
+    return tasks.filter((task) => task.user === userId);
+  };
+
   return (
     <div className="container mx-auto max-w-7xl p-4">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-6">Team</h2>
+        <h2 className="text-2xl font-bold mb-6">Own Projects</h2>
         <table className="min-w-full border-collapse block md:table mx-auto text-lg">
           <thead className="block md:table-header-group">
             <tr className="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative">
@@ -67,27 +70,50 @@ function Team() {
                     {formatTime(project.totalDuration)}
                   </td>
                   <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 block md:table-cell">
-                    <div>
-                      <span className="text-transform: capitalize font-semibold">
-                        {project.creator.user.firstName}{" "}
-                        {project.creator.user.lastName} (Project Creator)
-                      </span>{" "}
-                      Work for :{" "}
-                      <span className="text-red-600 ml-4">
-                        {formatTime(project.creator.duration)}
-                      </span>{" "}
-                    </div>
-                    {project.sharedUsersWithDurations.map((sharedUser) => (
-                      <div key={sharedUser.user._id}>
-                        <span className="text-transform: capitalize font-semibold">
-                          {sharedUser.user.firstName} {sharedUser.user.lastName}
+                    <ul className="list-disc pl-5">
+                      <li className="mb-2">
+                        <span className="font-semibold">
+                          {project.creator.user.firstName}{" "}
+                          {project.creator.user.lastName} (Project Creator)
                         </span>{" "}
                         Work for :{" "}
                         <span className="text-red-600 ml-4">
-                          {formatTime(sharedUser.duration)}
+                          {formatTime(project.creator.duration)}
                         </span>
-                      </div>
-                    ))}
+                        <ul className="list-none pl-4">
+                          {getUserTasks(
+                            project.creator.user._id,
+                            project.tasks
+                          ).map((task) => (
+                            <li key={task._id} className="text-blue-700">
+                              {task.title}
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                      {project.sharedUsersWithDurations.map((sharedUser) => (
+                        <li key={sharedUser.user._id} className="mb-2">
+                          <span className="font-semibold">
+                            {sharedUser.user.firstName}{" "}
+                            {sharedUser.user.lastName}
+                          </span>{" "}
+                          Work for :{" "}
+                          <span className="text-red-600 ml-4">
+                            {formatTime(sharedUser.duration)}
+                          </span>
+                          <ul className="list-none pl-4">
+                            {getUserTasks(
+                              sharedUser.user._id,
+                              project.tasks
+                            ).map((task) => (
+                              <li key={task._id} className="text-blue-700">
+                                {task.title}
+                              </li>
+                            ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ul>
                   </td>
                 </tr>
               ))
@@ -108,4 +134,4 @@ function Team() {
   );
 }
 
-export default Team;
+export default Own_Projects;

@@ -12,7 +12,6 @@ const ActivationPage = () => {
         const response = await axios.get(
           `http://localhost:3000/api/v1/users/activate/${activationCode}`
         );
-        console.log(response);
         setStatus(response.data.message);
       } catch (err) {
         setStatus("Activation failed. Invalid activation code.");

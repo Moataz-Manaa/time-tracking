@@ -52,14 +52,17 @@ const Navbar = () => {
               <Link to="/create-task" className="px-4 py-2 text-md">
                 Create Task
               </Link>
-              <Link to="/team" className="px-4 py-2 text-md">
-                Team
+              <Link to="/own-projects" className="px-4 py-2 text-md">
+                Own-projects
               </Link>
               {userRole === "admin" && (
-                <Link to="/projects" className="px-4 py-2 text-md">
-                  Projects
+                <Link to="/admin" className="px-4 py-2 text-md">
+                  Admin
                 </Link>
               )}
+              <Link to="/profile" className="px-4 py-2 text-md">
+                Profile
+              </Link>
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 mt-2 md:mt-0 bg-stone-700"

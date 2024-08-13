@@ -11,7 +11,6 @@ router.get("/user-tasks", TaskController.getAllTasksForUser);
 router.get("/tasks/date/:date", TaskController.getTasksByDate);
 router.post("/", ProjectController.addProject);
 router.post("/share", ProjectController.shareProject);
-//router.post("/join", ProjectController.joinProject);
 router.get("/", ProjectController.getProjects);
 router.get(
   "/my-projects-and-shared-users",

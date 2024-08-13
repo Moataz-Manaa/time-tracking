@@ -12,14 +12,6 @@ const signToken = (id) => {
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
-  res.cookie("jwt", token, {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ),
-    secure: true,
-    httpOnly: true,
-  });
-
   res.status(statusCode).json({
     status: "success",
     token,
@@ -88,9 +80,24 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = (req, res) => {
-  res.clearCookie("jwt");
-  res.status(200).json({ message: "Successfully logged out" });
+exports.updatePassword = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (
+      !(await user.correctPassword(req.body.passwordCurrent, user.password))
+    ) {
+      return res
+        .status(401)
+        .json({ message: "Your current password is wrong" });
+    }
+
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    await user.save();
+    createSendToken(user, 200, res);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };
 
 exports.protect = async (req, res, next) => {
@@ -141,17 +148,15 @@ exports.activateAccount = async (req, res) => {
 
     const user = await User.findOneAndUpdate(
       { activationCode },
-      { active: true, activationCode: undefined },
-      { new: true }
+      { active: true },
+      { new: true } //return the updated document
     );
 
     if (!user) {
       return res.status(400).json({ message: "Invalid activation code" });
     }
-
     res.status(200).json({ message: "Account activated successfully" });
   } catch (err) {
-    console.error("Error activating account:", err); // Log the error for debugging
     res
       .status(500)
       .send({ message: "An error occurred while activating the account." });

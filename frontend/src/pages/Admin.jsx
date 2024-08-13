@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-function Projects() {
+function Admin() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +15,6 @@ function Projects() {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log("Projects data:", response.data.data);
         setProjects(response.data.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -23,7 +22,6 @@ function Projects() {
         setLoading(false);
       }
     };
-
     fetchProjects();
   }, []);
 
@@ -42,7 +40,7 @@ function Projects() {
   return (
     <div className="container mx-auto max-w-7xl p-4">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-6">Projects</h2>
+        <h2 className="text-2xl font-bold mb-6">Admin Page</h2>
       </div>
       {loading ? (
         <div className="text-center">Loading...</div>
@@ -134,4 +132,4 @@ function Projects() {
   );
 }
 
-export default Projects;
+export default Admin;

@@ -7,9 +7,10 @@ import Navbar from "./components/Navbar";
 import CreateProject from "./pages/CreateProject";
 import CreateTask from "./pages/CreateTask";
 import RootPage from "./pages/RootPage";
-import Projects from "./pages/Projects";
-import Team from "./pages/Team";
+import Admin from "./pages/Admin";
+import Own_Projects from "./pages/Own_Projects";
 import ActivationPage from "./pages/ActivationPage";
+import Profile from "./pages/Profile";
 function App() {
   return (
     <Router>
@@ -36,19 +37,27 @@ function App() {
           }
         />
         <Route
-          path="/team"
+          path="/own-projects"
           element={
             <PrivateRoute>
-              <Team />
+              <Own_Projects />
             </PrivateRoute>
           }
         />
 
         <Route
-          path="/projects"
+          path="/admin"
           element={
             <PrivateRoute>
-              <Projects />
+              <Admin />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
             </PrivateRoute>
           }
         />

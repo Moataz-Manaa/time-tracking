@@ -25,39 +25,22 @@ exports.shareProject = async (req, res) => {
     const { projectId, sharedEmails } = req.body;
     const usersToShareWith = await User.find({ email: { $in: sharedEmails } });
     const sharedWithIds = usersToShareWith.map((user) => user._id);
-
-    // Generate a join token for each email
-    const joinTokens = sharedEmails.map((email) => {
-      const token = crypto.randomBytes(32).toString("hex");
-      return { token, email };
-    });
-
     // Update the project with the join tokens
     const project = await Project.findByIdAndUpdate(
       projectId,
       {
         $addToSet: { sharedWith: { $each: sharedWithIds } },
-        $push: { joinTokens: { $each: joinTokens } },
       },
       { new: true }
     );
-
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
-
-    /*
-    joinTokens.forEach(({ token, email }) => {
-      const joinUrl = `http://localhost:5173/join-project/${token}?projectId=${projectId}`;
-      sendJoinEmail(email, joinUrl);
-    });*/
-
     // Add project to the shared users' project lists
     await User.updateMany(
       { _id: { $in: sharedWithIds } },
       { $addToSet: { projects: project._id } }
     );
-
     res.status(200).json({ message: "Project shared!", project });
   } catch (err) {
     res.status(500).send({ message: err.message });
@@ -68,7 +51,7 @@ exports.getProjects = async (req, res) => {
   try {
     const projects = await Project.find({
       $or: [{ user: req.user._id }, { sharedWith: req.user._id }],
-    }).populate("user sharedWith userDurations.user");
+    });
     res.status(200).json({ status: "success", data: projects });
   } catch (err) {
     res.status(500).send({ message: err.message });
@@ -154,7 +137,8 @@ exports.getMyProjectsAndSharedUsers = async (req, res) => {
     const projects = await Project.find({ user: req.user._id })
       .populate("user", "firstName lastName email")
       .populate("sharedWith", "firstName lastName email")
-      .populate("userDurations.user", "firstName lastName email");
+      .populate("userDurations.user")
+      .populate("tasks");
 
     if (!projects.length) {
       return res.status(404).json({ message: "No projects found" });
@@ -179,6 +163,7 @@ exports.getMyProjectsAndSharedUsers = async (req, res) => {
         _id: project._id,
         projectName: project.projectName,
         totalDuration: project.totalDuration,
+        tasks: project.tasks,
         creator: {
           user: project.user,
           duration: creatorDuration ? creatorDuration.duration : 0,
