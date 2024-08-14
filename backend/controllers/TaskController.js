@@ -108,13 +108,13 @@ exports.deleteTask = async (req, res) => {
     await Project.findByIdAndUpdate(projectId, {
       $pull: { tasks: taskId },
       totalDuration: newTotalDuration,
-      userDurations: project.userDurations, // Update userDurations array
+      userDurations: project.userDurations,
     });
 
     // Remove task from Task collection
     await Task.findByIdAndDelete(taskId);
 
-    res.send("Task deleted and user duration updated");
+    res.send("Task deleted");
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
@@ -128,22 +128,6 @@ exports.getTasks = async (req, res) => {
       return res.status(404).send("No tasks found for this project");
     }
     res.send(tasks);
-  } catch (err) {
-    res.status(500).send({ message: err.message });
-  }
-};
-
-exports.getAllTasksForUser = async (req, res) => {
-  try {
-    const projects = await Project.find({ user: req.user._id });
-    const projectIds = projects.map((project) => project._id);
-
-    const tasks = await Task.find({ projectId: { $in: projectIds } });
-
-    res.status(200).json({
-      status: "success",
-      data: tasks,
-    });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }

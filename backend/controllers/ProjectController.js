@@ -58,22 +58,6 @@ exports.getProjects = async (req, res) => {
   }
 };
 
-exports.getOneProject = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const project = await Project.findOne({
-      _id: id,
-      $or: [{ user: req.user._id }, { sharedWith: req.user._id }],
-    });
-    if (!project) {
-      return res.status(404).json({ message: "Project not found" });
-    }
-    res.status(200).json({ status: "success", data: project });
-  } catch (err) {
-    res.status(500).send({ message: err.message });
-  }
-};
-
 exports.deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -90,27 +74,6 @@ exports.deleteProject = async (req, res) => {
     // Delete the project
     await Project.findByIdAndDelete(id);
     res.status(200).json({ message: "Project and associated tasks deleted!" });
-  } catch (err) {
-    res.status(500).send({ message: err.message });
-  }
-};
-
-exports.updateProject = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updatedProject = await Project.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    }).populate("tasks");
-    if (!updatedProject) {
-      return res.status(404).json({
-        message: "Project not found",
-      });
-    }
-    res.status(200).json({
-      message: "Project updated successfully!",
-      project: updatedProject,
-    });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
@@ -143,7 +106,6 @@ exports.getMyProjectsAndSharedUsers = async (req, res) => {
     if (!projects.length) {
       return res.status(404).json({ message: "No projects found" });
     }
-    // Prepare response data including user durations
     const response = projects.map((project) => {
       const sharedUsersWithDurations = project.sharedWith.map((sharedUser) => {
         const userDuration = project.userDurations.find(

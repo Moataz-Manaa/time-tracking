@@ -7,6 +7,7 @@ import WeekDays from "../components/WeekDays";
 import { DateTime } from "luxon";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { formatDuration } from "../utils";
 
 const CreateTask = () => {
   const [taskTitle, setTaskTitle] = useState("");
@@ -188,15 +189,6 @@ const CreateTask = () => {
     setTotalDuration(total);
   };
 
-  const formatTime = (seconds) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs.toString().padStart(2, "0")}:${mins
-      .toString()
-      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
   const convertToSeconds = (timeString) => {
     const [hrs, mins, secs] = timeString.split(":").map(Number);
     return hrs * 3600 + mins * 60 + secs;
@@ -209,7 +201,7 @@ const CreateTask = () => {
   const openEditModal = (task) => {
     setEditTask(task);
     setEditTaskTitle(task.title);
-    setEditTimerInput(formatTime(task.duration));
+    setEditTimerInput(formatDuration(task.duration));
     setIsEditModalOpen(true);
   };
 
@@ -337,7 +329,7 @@ const CreateTask = () => {
                       {task.title}
                     </td>
                     <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                      {formatTime(task.duration)}
+                      {formatDuration(task.duration)}
                     </td>
                     <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
                       {task.Date.toLocaleDateString()}
@@ -436,7 +428,7 @@ const CreateTask = () => {
         <div className="mt-4">
           <p>
             <span className="inline-block text-lg font-bold mr-3">Total:</span>
-            {formatTime(totalDuration)}
+            {formatDuration(totalDuration)}
           </p>
         </div>
       )}

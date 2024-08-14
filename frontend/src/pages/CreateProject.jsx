@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { formatDuration } from "../utils";
 
 const CreateProject = () => {
   const [projects, setProjects] = useState([]);
@@ -53,7 +54,6 @@ const CreateProject = () => {
       toast.error("Project deleted !");
     } catch (error) {
       console.error("Error deleting project:", error);
-      toast.error("Failed to delete project");
     }
   };
 
@@ -104,19 +104,8 @@ const CreateProject = () => {
     }
   };
 
-  const formatTime = (seconds) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs.toString().padStart(2, "0")}:${mins
-      .toString()
-      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
   const handleShareClick = (project) => {
     const userId = localStorage.getItem("userId");
-    console.log(userId);
-    console.log(project.user._id);
     if (project.user !== userId && project.user._id !== userId) {
       alert("You do not have permission to share this project");
       return;
@@ -178,7 +167,7 @@ const CreateProject = () => {
                       {project.projectName}
                     </td>
                     <td className="p-2 md:border md:border-grey-500">
-                      {formatTime(project.totalDuration)}
+                      {formatDuration(project.totalDuration)}
                     </td>
                     <td className="p-2 md:border md:border-grey-500">
                       <button

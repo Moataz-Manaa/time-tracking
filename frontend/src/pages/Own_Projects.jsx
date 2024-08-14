@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { formatDuration } from "../utils";
 
 function Own_Projects() {
   const [projects, setProjects] = useState([]);
@@ -24,15 +25,6 @@ function Own_Projects() {
 
     fetchProjects();
   }, []);
-
-  const formatTime = (seconds) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs.toString().padStart(2, "0")}:${mins
-      .toString()
-      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
 
   const getUserTasks = (userId, tasks) => {
     return tasks.filter((task) => task.user === userId);
@@ -67,7 +59,7 @@ function Own_Projects() {
                     {project.projectName}
                   </td>
                   <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 block md:table-cell">
-                    {formatTime(project.totalDuration)}
+                    {formatDuration(project.totalDuration)}
                   </td>
                   <td className="pl-5 pb-2 pt-2 md:border md:border-grey-500 block md:table-cell">
                     <ul className="list-disc pl-5">
@@ -78,7 +70,7 @@ function Own_Projects() {
                         </span>{" "}
                         Work for :{" "}
                         <span className="text-red-600 ml-4">
-                          {formatTime(project.creator.duration)}
+                          {formatDuration(project.creator.duration)}
                         </span>
                         <ul className="list-none pl-4">
                           {getUserTasks(
@@ -99,7 +91,7 @@ function Own_Projects() {
                           </span>{" "}
                           Work for :{" "}
                           <span className="text-red-600 ml-4">
-                            {formatTime(sharedUser.duration)}
+                            {formatDuration(sharedUser.duration)}
                           </span>
                           <ul className="list-none pl-4">
                             {getUserTasks(

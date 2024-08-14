@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { formatDuration } from "../utils"; // Adjust the path as necessary
 
 function Admin() {
   const [projects, setProjects] = useState([]);
@@ -24,13 +25,6 @@ function Admin() {
     };
     fetchProjects();
   }, []);
-
-  const formatDuration = (duration) => {
-    const hours = String(Math.floor(duration / 3600)).padStart(2, "0");
-    const minutes = String(Math.floor((duration % 3600) / 60)).padStart(2, "0");
-    const seconds = String(duration % 60).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
-  };
 
   const getUserDuration = (userId, userDurations) => {
     const userDuration = userDurations.find((ud) => ud.user === userId);

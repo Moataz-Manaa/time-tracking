@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.use(authController.protect);
 
-router.get("/user-tasks", TaskController.getAllTasksForUser);
 router.get("/tasks/date/:date", TaskController.getTasksByDate);
 router.post("/", ProjectController.addProject);
 router.post("/share", ProjectController.shareProject);
@@ -21,8 +20,7 @@ router.get(
   authController.restrictTo("admin"),
   ProjectController.getAllProjectDetails
 );
-router.get("/:id", ProjectController.getOneProject);
-router.patch("/:id", ProjectController.updateProject);
+
 router.delete("/:id", ProjectController.deleteProject);
 
 router.post("/:projectId/tasks", TaskController.addTask);
