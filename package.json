@@ -1,0 +1,34 @@
+{
+  "name": "simple-time-tracker",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node --watch server/index.js",
+    "client": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "node --test server/platform.test.js src/utils/taskFilters.test.js src/utils/reports.test.js src/utils/csv.test.js src/services/api.test.js",
+    "import:legacy": "node server/import-legacy.js"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "bcryptjs": "^3.0.3",
+    "connect-mongo": "^6.0.0",
+    "dotenv": "^18.0.9",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.7.3",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "mongoose": "^9.12.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.0",
+    "vite": "^6.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "mongodb-memory-server": "^11.3.0"
+  },
+  "type": "module"
+}

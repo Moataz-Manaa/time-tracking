@@ -1,0 +1,95 @@
+@import "tailwindcss";
+@theme { --font-sans: 'Segoe UI', sans-serif; }
+textarea { border:1px solid #e3e7e5; border-radius:8px; padding:10px 12px; background:white; font-size:13px; resize:vertical; }
+textarea:focus { outline:2px solid #a3cba8; }
+
+.task-panel {
+  container: task-panel / inline-size;
+  --task-control-height: 40px;
+  --task-panel-padding: clamp(14px, 3cqi, 22px);
+}
+
+.task-panel > .section-heading {
+  padding-inline: var(--task-panel-padding);
+  padding-bottom: 16px;
+}
+
+.task-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 10px;
+}
+
+.task-filters {
+  padding: 0 var(--task-panel-padding) 18px;
+}
+
+.task-form {
+  padding: 14px var(--task-panel-padding) 16px;
+  background: #f7f9f8;
+  border-top: 1px solid #edf0ee;
+}
+
+.task-controls label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: #43554c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-controls :is(input, select, button) {
+  width: 100%;
+  min-width: 0;
+  height: var(--task-control-height);
+  padding-block: 0;
+}
+
+.task-controls :is(input, select) {
+  color: #25302c;
+  font-weight: 400;
+}
+
+.task-controls button { white-space: nowrap; }
+
+@container task-panel (width < 440px) {
+  .task-controls > :is(.task-control-wide, button) { grid-column: 1 / -1; }
+}
+
+@container task-panel (width >= 440px) {
+  .task-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@container task-panel (width >= 800px) {
+  .task-controls.task-filters,
+  .task-controls.task-form {
+    grid-template-columns: minmax(170px, 2fr) repeat(3, minmax(105px, 1fr)) minmax(150px, 1.15fr) 100px;
+  }
+}
+
+.task-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.task-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.task-status[data-status="todo"] { background: #eef1f5; color: #45566c; }
+.task-status[data-status="in-progress"] { background: #e5efff; color: #1d4e91; }
+.task-status[data-status="done"] { background: #e5f5eb; color: #206343; }
+body { margin:0; background:#f7f8fa; color:#25302c; } button, select { cursor:pointer; } button:disabled { opacity:.4; cursor:default; } input,select { border:1px solid #e3e7e5; border-radius:8px; padding:10px 12px; background:white; font-size:13px; min-width:0; } input:focus,select:focus { outline:2px solid #a3cba8; } .sidebar { width:230px; background:#183d32; color:#b4c9bf; padding:35px 20px; position:sticky; top:0; height:100vh; flex-shrink:0; } .brand { display:flex; gap:10px; align-items:center; font-size:32px; font-weight:700; color:white; padding:0 13px; letter-spacing:-1px; } .nav-label { font-size:10px; letter-spacing:2px; margin:54px 14px 16px; } .nav-item { display:flex; gap:14px; width:100%; text-align:left; padding:13px 16px; margin-bottom:7px; border-radius:8px; font-size:14px; } .selected { background:#315447; color:#e4f9a6; } .sidebar-bottom { position:absolute; bottom:28px; display:flex; gap:10px; align-items:center; font-size:13px; } small { display:block; color:#8a9690; font-size:11px; margin-top:4px; } .avatar { background:#dcedb0; color:#183d32; border-radius:50%; padding:9px 14px; } header { height:78px; border-bottom:1px solid #e8ece9; padding:0 40px; display:flex; justify-content:space-between; align-items:center; font-size:12px; background:white; } .content { max-width:1400px; margin:auto; padding:40px; } .eyebrow { font-size:10px; letter-spacing:2px; color:#7c8c81; margin-bottom:10px; } h1 { font-size:30px; font-weight:600; letter-spacing:-1px; } h2 { font-size:16px; font-weight:600; } .date { font-size:12px; color:#738078; white-space:nowrap; } .card { border:1px solid #e5e9e6; background:white; border-radius:12px; overflow:hidden; } .stat { padding:23px; } .stat p { color:#738078; font-size:12px; } .stat strong { display:block; font-size:29px; margin:12px 0 8px; font-weight:600; letter-spacing:-1px; } .timer { background:#edf2e5; border:1px solid #dfe7d3; border-radius:12px; padding:27px; display:flex; align-items:center; justify-content:space-between; gap:20px; } .timer h2 { margin:12px 0 6px; font-size:18px; } .timer p { font-size:12px; color:#7c8974; } .timer-number { font-size:30px; font-family:monospace; font-weight:500; } .dot { width:7px;height:7px; border-radius:50%;background:#a8b39d; } .running { background:#3b875a; } .primary { background:#214e3e; color:white; border-radius:7px; padding:10px 14px; font-size:12px; white-space:nowrap; } .secondary { border:1px dashed #cbd6cc; padding:10px; border-radius:7px; font-size:12px; color:#42644e; } .section-heading { display:flex; justify-content:space-between; align-items:center; padding:22px; gap:10px; } .count { font-size:11px; background:#f0f3ef; padding:3px 7px; border-radius:5px; margin-left:5px; } .empty { text-align:center; padding:48px 20px 60px; font-size:12px; color:#8b958f; } .empty h3 { color:#46564b; font-size:16px; margin:12px 0 5px; } .empty-icon { display:inline-block; background:#f1f5eb; padding:10px 17px; border-radius:12px; font-size:22px; color:#7d9465; } .task-row { display:flex; align-items:center; gap:15px; padding:18px 22px; border-top:1px solid #eef0ee; font-size:14px; } .play { background:#f0f5ed; color:#3f694b; width:32px; height:32px; border-radius:50%; font-size:11px; } .projects { padding:23px; align-self:start; } .project-row { display:flex; gap:12px; align-items:center; width:100%; text-align:left; font-size:13px; margin:16px 0; } .project-icon { background:#f1eddf; color:#927a43; padding:9px 13px; border-radius:8px; } footer { margin-top:32px; display:flex; justify-content:space-between; font-size:11px; color:#9ba69f; } @media(max-width:900px) { .sidebar { width:185px; } .content { padding:25px; } .timer { flex-wrap:wrap; } header { padding:0 25px; } header>span:last-child { display:none; } } @media(max-width:640px) { .sidebar { position:relative; width:100%; height:auto; padding:16px; display:flex; gap:5px; flex-wrap:wrap; } .brand { width:100%; font-size:26px; margin-bottom:10px; } .nav-label,.sidebar-bottom { display:none; } .nav-item { width:auto; padding:8px; font-size:12px; } .content { padding:22px 16px; } h1 { font-size:25px; } .date { display:none; } footer span { display:none; } .timer-number { font-size:26px; } }
