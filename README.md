@@ -53,9 +53,9 @@ Open [http://127.0.0.1:5173](http://127.0.0.1:5173), register, then create a pro
 
 Run `npm run build` before `npm start`. Set `NODE_ENV=production`, set `APP_ORIGIN` to your public HTTPS origin, and configure `MONGODB_URI` and `SESSION_SECRET` privately. Use a single trusted HTTPS reverse proxy forwarding to `127.0.0.1:3001` (or your configured port). Check `/api/health` for database readiness. Back up MongoDB independently of the app, and never commit `.env` or database backups.
 
-## Progress and architecture
+## Architecture
 
-The React client is in `src/` and the Express API is in `server/`. See [Architecture](docs/ARCHITECTURE.md) for folder responsibilities and the [platform checklist](PLAN.md) for remaining work.
+The React client is in `src/` and the Express API is in `server/`. See [Architecture](docs/ARCHITECTURE.md) for folder responsibilities.
 
 ## API
 

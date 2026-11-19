@@ -13,7 +13,6 @@ Keep one React client and one Express API. Use plain JavaScript and direct Mongo
 - `server/routes/`: authentication, projects, tasks, time, reports.
 - `server/middleware/`: authentication, validation, error handling.
 - `docs/`: setup and API documentation.
-- `PLAN.md`: ordered implementation checklist and verification status.
 
 The API now uses MongoDB. Existing JSON data is preserved and is imported only through an explicit command targeting an empty account.
 
